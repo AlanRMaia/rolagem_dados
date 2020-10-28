@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rolagem_dados/services/data_base.dart';
 
 class TextComposer extends StatefulWidget {
   @override
@@ -8,12 +9,15 @@ class TextComposer extends StatefulWidget {
 }
 
 class _TextComposerState extends State<TextComposer> {
-  bool _isComposing = false; 
-  // ignore: unnecessary_getters_setters
-  bool get isComposing => _isComposing;
-  // ignore: unnecessary_getters_setters
-  set isComposing(bool value) => _isComposing = value;
-
+  final TextEditingController _textController = TextEditingController();
+  final Database _database = Get.put(Database());
+  bool _isComposing = false;   
+  void _reset(){
+    _textController.clear();
+    setState(() {
+      _isComposing = false;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return IconTheme(
@@ -36,24 +40,34 @@ class _TextComposerState extends State<TextComposer> {
             ),
             Expanded(
                 child: TextField(
+                  controller: _textController,
               decoration:
                   const InputDecoration(hintText: 'Enviar uma mensagem'),
               onChanged: (text) {
                 setState(() {
-                isComposing= text.isNotEmpty;
-                  
-                });
+                _isComposing= text.isNotEmpty;                  
+                });                
+              },
+              onSubmitted: (text){
+                _database.handleSubmitted(text);
+                _reset();
               },
             )),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 4),
               child: Get.theme.platform == TargetPlatform.iOS
                   ? CupertinoButton(
-                      onPressed: isComposing? () {} : null,
+                      onPressed: _isComposing? () {
+                        _database.handleSubmitted(_textController.text);
+                        _reset();
+                      } : null,
                       child: const Text('Enviar'),
                     )
                   : IconButton(
-                      onPressed: isComposing? () {} : null,
+                      onPressed: _isComposing? () {
+                        _database.handleSubmitted(_textController.text);
+                        _reset();
+                      } : null,
                       icon: const Icon(Icons.send),
                     ),
             ),

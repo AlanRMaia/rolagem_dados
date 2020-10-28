@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:rolagem_dados/models/user.dart';
 
 class UserController extends GetxController {
+  static UserController get to => Get.find();
 
   final Rx<UserModel> _userModel = UserModel().obs;
 
@@ -9,6 +10,7 @@ class UserController extends GetxController {
 
   set user(UserModel value) => this._userModel.value = value; 
 
+  
   void clear(){
     _userModel.value = UserModel(); 
   }
