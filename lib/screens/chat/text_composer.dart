@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 
 class TextComposer extends StatefulWidget {
@@ -11,13 +14,14 @@ class TextComposer extends StatefulWidget {
 class _TextComposerState extends State<TextComposer> {
   final TextEditingController _textController = TextEditingController();
   final Database _database = Get.put(Database());
-  bool _isComposing = false;   
-  void _reset(){
+  bool _isComposing = false;
+  void _reset() {
     _textController.clear();
     setState(() {
       _isComposing = false;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return IconTheme(
@@ -36,19 +40,23 @@ class _TextComposerState extends State<TextComposer> {
           children: [
             IconButton(
               icon: const Icon(Icons.photo_camera),
-              onPressed: () {},
+              onPressed: () async {
+                final File imgFile =
+                    await ImagePicker.pickImage(source: ImageSource.camera);
+                if (imgFile == null) return;
+              },
             ),
             Expanded(
                 child: TextField(
-                  controller: _textController,
+              controller: _textController,
               decoration:
                   const InputDecoration(hintText: 'Enviar uma mensagem'),
               onChanged: (text) {
                 setState(() {
-                _isComposing= text.isNotEmpty;                  
-                });                
+                  _isComposing = text.isNotEmpty;
+                });
               },
-              onSubmitted: (text){
+              onSubmitted: (text) {
                 _database.handleSubmitted(text);
                 _reset();
               },
@@ -57,17 +65,21 @@ class _TextComposerState extends State<TextComposer> {
               margin: const EdgeInsets.symmetric(horizontal: 4),
               child: Get.theme.platform == TargetPlatform.iOS
                   ? CupertinoButton(
-                      onPressed: _isComposing? () {
-                        _database.handleSubmitted(_textController.text);
-                        _reset();
-                      } : null,
+                      onPressed: _isComposing
+                          ? () {
+                              _database.handleSubmitted(_textController.text);
+                              _reset();
+                            }
+                          : null,
                       child: const Text('Enviar'),
                     )
                   : IconButton(
-                      onPressed: _isComposing? () {
-                        _database.handleSubmitted(_textController.text);
-                        _reset();
-                      } : null,
+                      onPressed: _isComposing
+                          ? () {
+                              _database.handleSubmitted(_textController.text);
+                              _reset();
+                            }
+                          : null,
                       icon: const Icon(Icons.send),
                     ),
             ),
