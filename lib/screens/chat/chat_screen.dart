@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/chat_screen_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/screens/chat/chat_message.dart';
-import 'package:rolagem_dados/services/data_base.dart';
 import 'text_composer.dart';
 
 class ChatScreen extends GetView<ChatScreenController> {

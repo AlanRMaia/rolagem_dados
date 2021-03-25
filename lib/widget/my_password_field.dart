@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rolagem_dados/controllers/auth_controller.dart';
 import '../constants.dart';
 
 class MyPasswordField extends StatelessWidget {

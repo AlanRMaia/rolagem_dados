@@ -110,17 +110,20 @@ class SignUp extends GetWidget<AuthController> {
                           ],
                         ),
                       ),
-                      MyTextButton(
-                        buttonName: 'Register',
-                        onTap: () {
-                          controller.createUser(
-                              nameController.text,
-                              emailController.text,
-                              passwordController.text,
-                              phoneController.text);
-                        },
-                        bgColor: Colors.white,
-                        textColor: Colors.black87,
+                      Obx(
+                        () => MyTextButton(
+                          buttonName: 'Register',
+                          isLoading: controller.isLoading,
+                          onTap: () {
+                            controller.createUser(
+                                nameController.text,
+                                emailController.text,
+                                passwordController.text,
+                                phoneController.text);
+                          },
+                          bgColor: Colors.white,
+                          textColor: Colors.black87,
+                        ),
                       ),
                       const SizedBox(height: 10)
                     ],

@@ -9,11 +9,17 @@ class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Rx<FirebaseUser> _firebaseUser = Rx<FirebaseUser>();
   final _isPassWordVisible = false.obs;
+  final _isLoading = false.obs;
 
   bool get isPassWordVisible => _isPassWordVisible.value;
 
   set isPassWordVisible(bool value) {
     _isPassWordVisible.value = value;
+  }
+
+  bool get isLoading => _isLoading.value;
+  set isLoading(bool value) {
+    _isLoading.value = value;
   }
 
   FirebaseUser get user => _firebaseUser.value;
@@ -25,6 +31,7 @@ class AuthController extends GetxController {
 
   Future<void> createUser(
       String name, String email, String password, String phone) async {
+    isLoading = true;
     try {
       final AuthResult _authResult = await _auth.createUserWithEmailAndPassword(
           email: email.trim(), password: password);
@@ -42,6 +49,7 @@ class AuthController extends GetxController {
       if (await Database().createNewUser(_user)) {
         //user created succesfully
         Get.find<UserController>().user = _user;
+        isLoading = false;
         Get.back();
       }
     } catch (e) {
@@ -54,12 +62,15 @@ class AuthController extends GetxController {
   }
 
   Future<void> login(String email, String password) async {
+    isLoading = true;
+
     try {
       //find user with uid
       final AuthResult _authResult = await _auth.signInWithEmailAndPassword(
           email: email.trim(), password: password);
       Get.find<UserController>().user =
           await Database().getUser(_authResult.user.uid);
+      isLoading = false;
       Get.offAll(Get.toNamed('/'));
       //set user for usermodel in database
     } catch (e) {

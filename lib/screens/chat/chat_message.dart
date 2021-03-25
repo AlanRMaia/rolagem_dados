@@ -25,7 +25,7 @@ class ChatMessage extends StatelessWidget {
                   ),
                 )
               : Container(),
-          Expanded(
+          Flexible(
             child: Column(
               crossAxisAlignment:
                   mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -35,7 +35,22 @@ class ChatMessage extends StatelessWidget {
                   style: Get.textTheme.bodyText1,
                 ),
                 Container(
-                  margin: const EdgeInsets.only(top: 5),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(24),
+                      bottomRight: mine
+                          ? const Radius.circular(0)
+                          : const Radius.circular(24),
+                      topRight: const Radius.circular(24),
+                      bottomLeft: mine
+                          ? const Radius.circular(24)
+                          : const Radius.circular(0),
+                    ),
+                    color: mine ? Colors.blue : const Color(0xfff1f0f0),
+                  ),
+                  padding: const EdgeInsets.all(16),
                   child: data['imgUrl'] != null
                       ? Image.network(
                           data['imgUrl'] as String,
@@ -43,7 +58,7 @@ class ChatMessage extends StatelessWidget {
                         )
                       : Text(
                           data['text'] as String,
-                          textAlign: mine ? TextAlign.end : TextAlign.start,
+                          //textAlign: mine ? TextAlign.end : TextAlign.start,
                           style: Get.textTheme.bodyText2,
                         ),
                 ),
