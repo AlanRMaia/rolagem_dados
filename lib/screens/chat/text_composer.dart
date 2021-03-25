@@ -14,7 +14,10 @@ class TextComposer extends StatefulWidget {
 class _TextComposerState extends State<TextComposer> {
   final TextEditingController _textController = TextEditingController();
   final Database _database = Get.put(Database());
-  bool _isComposing = false;
+
+  bool _isComposing =
+      false; //serve para acompanhar a mudança de estado da caixa de texto. Se ela está preenchida ou não antes de enviar a mensagem.
+
   void _reset() {
     _textController.clear();
     setState(() {
@@ -44,6 +47,8 @@ class _TextComposerState extends State<TextComposer> {
                 final File imgFile =
                     await ImagePicker.pickImage(source: ImageSource.camera);
                 if (imgFile == null) return;
+                _database.handleSubmitted(imgFile: imgFile);
+                _reset();
               },
             ),
             Expanded(
@@ -57,8 +62,16 @@ class _TextComposerState extends State<TextComposer> {
                 });
               },
               onSubmitted: (text) {
-                _database.handleSubmitted(text);
-                _reset();
+                if (_isComposing) {
+                  _database.handleSubmitted(text: text);
+                  _reset();
+                } else {
+                  Get.snackbar(
+                    'Erro ao tentar enviar a mensagem',
+                    'Sua caixa de texto está vazia',
+                    snackPosition: SnackPosition.TOP,
+                  );
+                }
               },
             )),
             Container(
@@ -67,7 +80,8 @@ class _TextComposerState extends State<TextComposer> {
                   ? CupertinoButton(
                       onPressed: _isComposing
                           ? () {
-                              _database.handleSubmitted(_textController.text);
+                              _database.handleSubmitted(
+                                  text: _textController.text);
                               _reset();
                             }
                           : null,
@@ -76,7 +90,8 @@ class _TextComposerState extends State<TextComposer> {
                   : IconButton(
                       onPressed: _isComposing
                           ? () {
-                              _database.handleSubmitted(_textController.text);
+                              _database.handleSubmitted(
+                                  text: _textController.text);
                               _reset();
                             }
                           : null,

@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/screens/home.dart';
-import 'package:rolagem_dados/screens/login.dart';
+import 'package:rolagem_dados/screens/presentation.dart';
 
 class Root extends GetWidget<AuthController> {
   @override
@@ -16,7 +16,7 @@ class Root extends GetWidget<AuthController> {
         if (controller.user?.uid != null) {
           return Home();
         } else {
-          return Login();
+          return Presentation();
         }
       },
     );

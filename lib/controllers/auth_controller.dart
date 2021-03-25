@@ -8,6 +8,13 @@ import 'package:rolagem_dados/utils/root.dart';
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Rx<FirebaseUser> _firebaseUser = Rx<FirebaseUser>();
+  final _isPassWordVisible = false.obs;
+
+  bool get isPassWordVisible => _isPassWordVisible.value;
+
+  set isPassWordVisible(bool value) {
+    _isPassWordVisible.value = value;
+  }
 
   FirebaseUser get user => _firebaseUser.value;
 
@@ -16,7 +23,8 @@ class AuthController extends GetxController {
     _firebaseUser.bindStream(_auth.onAuthStateChanged);
   }
 
-  Future<void> createUser(String name, String email, String password) async {
+  Future<void> createUser(
+      String name, String email, String password, String phone) async {
     try {
       final AuthResult _authResult = await _auth.createUserWithEmailAndPassword(
           email: email.trim(), password: password);
@@ -28,9 +36,10 @@ class AuthController extends GetxController {
         id: _authResult.user.uid,
         name: name,
         email: email,
+        phone: phone,
       );
 
-      if(await Database().createNewUser(_user)){
+      if (await Database().createNewUser(_user)) {
         //user created succesfully
         Get.find<UserController>().user = _user;
         Get.back();
@@ -47,8 +56,12 @@ class AuthController extends GetxController {
   Future<void> login(String email, String password) async {
     try {
       //find user with uid
-     final AuthResult _authResult = await _auth.signInWithEmailAndPassword(email: email.trim(), password: password);
-      Get.find<UserController>().user = await Database().getUser(_authResult.user.uid); //set user for usermodel in database 
+      final AuthResult _authResult = await _auth.signInWithEmailAndPassword(
+          email: email.trim(), password: password);
+      Get.find<UserController>().user =
+          await Database().getUser(_authResult.user.uid);
+      Get.offAll(Get.toNamed('/'));
+      //set user for usermodel in database
     } catch (e) {
       Get.snackbar(
         'Error ao efetuar o login',

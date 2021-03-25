@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
-import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/screens/signup.dart';
+import 'package:rolagem_dados/widget/my_text_field.dart';
+import 'package:rolagem_dados/widget/widget.dart';
+
+import '../constants.dart';
 
 class Login extends GetWidget<AuthController> {
   final TextEditingController emailController = TextEditingController();
@@ -12,39 +16,98 @@ class Login extends GetWidget<AuthController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
-        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => Get.back(),
+          icon: const Image(
+            width: 24,
+            color: Colors.white,
+            image: Svg('assets/images/back_arrow.svg'),
+          ),
+        ),
       ),
-      body: Center(        
-        child: Padding(          
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Column(            
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                    // hintText: 'Email',
-                    labelText: 'Email'),
+      body: SafeArea(
+        child: GestureDetector(
+          onTap: () => Get.focusScope.unfocus(),
+          child: CustomScrollView(
+            reverse: true,
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Flexible(
+                          child: Column(
+                        children: [
+                          const Text(
+                            "Welcome back.",
+                            style: kHeadline,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text(
+                            "You've been missed!",
+                            style: kBodyText2,
+                          ),
+                          const SizedBox(
+                            height: 60,
+                          ),
+                          MyTextField(
+                            controller: emailController,
+                            hintText: 'Email',
+                            inputType: TextInputType.emailAddress,
+                          ),
+                          Expanded(
+                            child: Obx(() => MyPasswordField(
+                                  controller: passwordController,
+                                  showPassword: controller.isPassWordVisible,
+                                  changeShowPassword: () =>
+                                      controller.isPassWordVisible =
+                                          !controller.isPassWordVisible,
+                                )),
+                          )
+                        ],
+                      )),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Dont't have an account? ",
+                            style: kBodyText,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Get.toNamed('signup');
+                            },
+                            child: Text(
+                              'Register',
+                              style: kBodyText.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      MyTextButton(
+                        buttonName: 'Log in',
+                        onTap: () {
+                          controller.login(
+                              emailController.text, passwordController.text);
+                        },
+                        bgColor: Colors.white,
+                        textColor: Colors.black87,
+                      ),
+                      const SizedBox(height: 20)
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-              ),
-              const SizedBox(height: 20),
-              RaisedButton(
-                onPressed: () {
-                  controller.login(emailController.text, passwordController.text);
-                },
-                child: const Text('Log In'),
-              ),
-              FlatButton(
-                onPressed: () {
-                  Get.to(SignUp());
-                },
-                child: const Text('Sign up'), 
-              )
             ],
           ),
         ),
