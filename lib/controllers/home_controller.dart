@@ -20,19 +20,20 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
     _imgUrl.value = value;
   }
 
-  final _rooms = <RoomModel>[].obs;
+  // final _rooms = <RoomModel>[].obs;
 
-  List<RoomModel> get rooms => _rooms;
+  // List<RoomModel> get rooms => _rooms;
 
-  set rooms(List<RoomModel> value) => _rooms.addAll(value);
+  // set rooms(List<RoomModel> value) => _rooms.addAll(value);
 
   void createRoom(String name) {
     _database.roomCreateSubmitted(name);
   }
 
   Future<void> loadingRooms() async {
+    change([], status: RxStatus.loading());
     try {
-      rooms = await _database.loadRooms();
+      final rooms = await _database.loadRooms();
       change(rooms, status: RxStatus.success());
     } catch (e) {
       print('Erro ao dar loading nas salas $e');

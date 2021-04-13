@@ -128,11 +128,8 @@ class Database extends GetxController {
 
   Future<List<RoomModel>> loadRooms() async {
     final List<Map<String, dynamic>> _rooms = [];
-    _firestore
-        .collection('rooms')
-        // .orderBy('time', descending: true)
-        .snapshots()
-        .listen((snapshot) {
+    _firestore.collection('rooms').snapshots().listen((snapshot) {
+      _rooms.clear();
       for (final DocumentSnapshot dados in snapshot.documents) {
         _rooms.add(dados.data);
       }
