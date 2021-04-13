@@ -2,13 +2,15 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
+import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/models/user.dart';
 
 class Database extends GetxController {
   final Firestore _firestore = Firestore.instance;
+
+  // static Database get to => Get.find();
 
   // bool _isLoading = false;
 
@@ -17,17 +19,31 @@ class Database extends GetxController {
   // void set isLoading(bool data) {
   //   _isLoading = data;
   // }
+  //
+  final _imgUrl = ''.obs;
+
+  String get imgUrl => _imgUrl.value;
+  set imgUrl(String value) {
+    _imgUrl.value = value;
+  }
 
   final _messages = <Map<String, dynamic>>[].obs;
 
   List<Map<String, dynamic>> get messages => _messages;
 
+  // final _rooms = <Map<String, dynamic>>[].obs;
+
+  // List<RoomModel> get rooms =>
+  //     _rooms.map((value) => RoomModel.fromMap(value)).toList();
+
   //final _messages = <Map<String, dynamic>>[].obs;
 
   Future<bool> createNewUser(UserModel user) async {
     try {
-      await _firestore.collection('users').document(user.id).setData(
-          {'name': user.name, 'email': user.email, 'phone': user.phone});
+      await _firestore
+          .collection('users')
+          .document(user.id)
+          .setData(user.toMap());
       return true;
     } catch (e) {
       print(e);
@@ -65,6 +81,64 @@ class Database extends GetxController {
     if (UserController.to.user != null) {
       _sendMessage(text: text, user: UserController.to.user, imgFile: imgFile);
     }
+  }
+
+  void roomCreateSubmitted(String name) {
+    if (UserController.to.user != null) {
+      _createdRoom(name: name, user: UserController.to.user);
+    }
+  }
+
+  Future<void> imageRoom(File imgFile) async {
+    try {
+      final StorageUploadTask task = FirebaseStorage.instance
+          .ref()
+          .child('Image Rooms')
+          .child(UserController.to.user.id +
+              DateTime.now().millisecondsSinceEpoch.toString())
+          .putFile(imgFile);
+
+      final StorageTaskSnapshot taskSnapshot = await task.onComplete;
+      final String url = await taskSnapshot.ref.getDownloadURL() as String;
+      imgUrl = url;
+    } catch (e) {
+      print('Erro de imagem: /$e');
+      rethrow;
+    }
+  }
+
+  Future<void> _createdRoom({String name, UserModel user}) async {
+    try {
+      final doc = await _firestore.collection('rooms').add({
+        'imgUrl': imgUrl,
+        'name': name,
+        'admUserId': user.id,
+      });
+      final id = doc.documentID;
+      await _firestore
+          .collection('users')
+          .document(user.id)
+          .collection('rooms')
+          .add({'id': id});
+    } catch (e) {
+      print('Erro ao criar uma sala $e');
+      rethrow;
+    }
+  }
+
+  Future<List<RoomModel>> loadRooms() async {
+    final List<Map<String, dynamic>> _rooms = [];
+    _firestore
+        .collection('rooms')
+        // .orderBy('time', descending: true)
+        .snapshots()
+        .listen((snapshot) {
+      for (final DocumentSnapshot dados in snapshot.documents) {
+        _rooms.add(dados.data);
+      }
+    });
+
+    return _rooms.map((map) => RoomModel.fromMap(map)).toList();
   }
 
   Future<void> _sendMessage({String text, File imgFile, UserModel user}) async {

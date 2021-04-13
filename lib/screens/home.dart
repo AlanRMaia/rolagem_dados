@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:rolagem_dados/constants.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
+import 'package:rolagem_dados/controllers/home_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/widget/my_text_button.dart';
@@ -8,6 +13,7 @@ import 'package:rolagem_dados/widget/my_text_field.dart';
 
 class Home extends GetWidget<AuthController> {
   final TextEditingController nameController = TextEditingController();
+  final HomeController _homeController = Get.put(HomeController(Database()));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +43,35 @@ class Home extends GetWidget<AuthController> {
           ),
         ],
       ),
-      body: SafeArea(child: Column()),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: _homeController.obx(
+                  (state) => ListView.builder(
+                      itemCount: state.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          leading: Image.network(state[index].imgUrl),
+                          title: Text(state[index].name),
+                        );
+                      }),
+                ),
+              ),
+              MyTextButton(
+                buttonName: 'ChatTest',
+                onTap: () {
+                  Get.toNamed('chatscreen');
+                },
+                bgColor: Colors.white,
+                textColor: Colors.black87,
+              )
+            ],
+          ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Criar uma nova sala',
         onPressed: () => showDialog(
@@ -96,7 +130,10 @@ class Home extends GetWidget<AuthController> {
                               Expanded(
                                 child: Obx(() => MyTextButton(
                                       isLoading: controller.isLoading,
-                                      onTap: () {},
+                                      onTap: () {
+                                        _homeController
+                                            .createRoom(nameController.text);
+                                      },
                                       buttonName: 'Criar',
                                       bgColor: Colors.transparent,
                                       textColor: Colors.black87,
@@ -109,19 +146,22 @@ class Home extends GetWidget<AuthController> {
                     ),
                   ),
                   Positioned(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: CircleAvatar(
-                        radius: 60,
-                        backgroundColor: Colors.grey[100],
-                        child: Icon(
-                          Icons.add_a_photo_sharp,
-                          color: Colors.black87,
-                          size: 40,
-                        ),
-                      ),
-                    ),
                     top: -60,
+                    child: Obx(() => GestureDetector(
+                          onTap: () async {
+                            final File imgFile = await ImagePicker.pickImage(
+                                source: ImageSource.camera);
+                            if (imgFile == null) return;
+                            Database().imageRoom(imgFile);
+                          },
+                          child: CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.grey[100],
+                            child: _homeController.imgUrl != null
+                                ? const Icon(Icons.account_circle_outlined)
+                                : const Icon(Icons.accessibility_new_rounded),
+                          ),
+                        )),
                   ),
                 ],
               ),

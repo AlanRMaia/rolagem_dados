@@ -6,7 +6,6 @@ import 'package:rolagem_dados/screens/chat/chat_message.dart';
 import 'text_composer.dart';
 
 class ChatScreen extends GetView<ChatScreenController> {
-  final UserController _userController = Get.find();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -26,7 +25,7 @@ class ChatScreen extends GetView<ChatScreenController> {
                   return ListView.builder(
                     reverse: true, //serve para inverter a ordem da lista
                     itemCount: state.length,
-                    itemBuilder: (context, index) {
+                    itemBuilder: (context, index) {                      
                       return ChatMessage(
                           state[index],
                           state[index]

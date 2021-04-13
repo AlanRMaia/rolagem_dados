@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rolagem_dados/screens/login.dart';
 import 'package:rolagem_dados/widget/my_text_button.dart';
 
 class Presentation extends StatelessWidget {

@@ -58,6 +58,7 @@ class AuthController extends GetxController {
         e.message as String,
         snackPosition: SnackPosition.BOTTOM,
       );
+      isLoading = false;
     }
   }
 

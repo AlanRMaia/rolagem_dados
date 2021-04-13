@@ -8,18 +8,19 @@ class UserController extends GetxController {
 
   UserModel get user => _userModel.value;
 
-  set user(UserModel value) => this._userModel.value = value; 
+  set user(UserModel value) {
+    _userModel.value = value;
+  }
 
-  
-  void clear(){
-    _userModel.value = UserModel(); 
+  void clear() {
+    _userModel.value = UserModel();
   }
 
 // final MyRepository repository;
 // UserController({@required this.repository}) : assert(repository != null);
-// 
+//
   // final _obj = ''.obs;
   // set obj(value) => this._obj.value = value;
   // get obj => this._obj.value;
-// 
+//
 }

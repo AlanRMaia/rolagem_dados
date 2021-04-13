@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
-import 'package:rolagem_dados/screens/signup.dart';
 import 'package:rolagem_dados/widget/my_text_field.dart';
 import 'package:rolagem_dados/widget/widget.dart';
 
