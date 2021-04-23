@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:rolagem_dados/constants.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/home_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/services/data_base.dart';
+import 'package:rolagem_dados/widget/homePage/image_room_preview.dart';
 import 'package:rolagem_dados/widget/my_text_button.dart';
 import 'package:rolagem_dados/widget/my_text_field.dart';
 
@@ -22,6 +22,7 @@ class Home extends GetWidget<AuthController> {
           initState: (_) async {
             Get.find<UserController>().user =
                 await Database().getUser(controller.user.uid);
+            _homeController.loadingRooms(controller.user.uid);
           },
           builder: (_) {
             if (_.user.name != null) {
@@ -53,9 +54,15 @@ class Home extends GetWidget<AuthController> {
                   (state) => ListView.builder(
                       itemCount: state.length,
                       itemBuilder: (context, index) {
-                        return ListTile(
-                          leading: Image.network(state[index].imgUrl),
-                          title: Text(state[index].name),
+                        return Card(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(state[index].imgUrl),
+                            ),
+                            title: Text(state[index].name),
+                            subtitle: Text(state[index].admUserId),
+                          ),
                         );
                       }),
                 ),
@@ -121,6 +128,7 @@ class Home extends GetWidget<AuthController> {
                                 child: MyTextButton(
                                   onTap: () {
                                     Get.back();
+                                    _homeController.resetImage();
                                   },
                                   bgColor: Colors.transparent,
                                   buttonName: 'Cancelar',
@@ -133,6 +141,11 @@ class Home extends GetWidget<AuthController> {
                                       onTap: () {
                                         _homeController
                                             .createRoom(nameController.text);
+
+                                        _homeController
+                                            .loadingRooms(controller.user.uid);
+
+                                        Get.back();
                                       },
                                       buttonName: 'Criar',
                                       bgColor: Colors.transparent,
@@ -146,23 +159,23 @@ class Home extends GetWidget<AuthController> {
                     ),
                   ),
                   Positioned(
-                    top: -60,
-                    child: Obx(() => GestureDetector(
-                          onTap: () async {
-                            final File imgFile = await ImagePicker.pickImage(
-                                source: ImageSource.camera);
-                            if (imgFile == null) return;
-                            Database().imageRoom(imgFile);
-                          },
-                          child: CircleAvatar(
-                            radius: 60,
-                            backgroundColor: Colors.grey[100],
-                            child: _homeController.imgUrl != null
-                                ? const Icon(Icons.account_circle_outlined)
-                                : const Icon(Icons.accessibility_new_rounded),
-                          ),
-                        )),
-                  ),
+                      top: -60,
+                      child: Obx(
+                        () => GestureDetector(
+                            onTap: () async {
+                              _homeController.showImage();
+                            },
+                            child: _homeController.imgUrl != ''
+                                ? ImageRoomPreview(
+                                    arquivo: File(_homeController.imgUrl))
+                                : const ImageRoomPreview(
+                                    icon: Icon(
+                                      Icons.add_a_photo_outlined,
+                                      color: Colors.black87,
+                                      size: 60,
+                                    ),
+                                  )),
+                      )),
                 ],
               ),
             );

@@ -31,10 +31,10 @@ class Database extends GetxController {
 
   List<Map<String, dynamic>> get messages => _messages;
 
-  // final _rooms = <Map<String, dynamic>>[].obs;
+  final _rooms = <Map<String, dynamic>>[].obs;
 
-  // List<RoomModel> get rooms =>
-  //     _rooms.map((value) => RoomModel.fromMap(value)).toList();
+  List<RoomModel> get rooms =>
+      _rooms.map((value) => RoomModel.fromMap(value)).toList();
 
   //final _messages = <Map<String, dynamic>>[].obs;
 
@@ -83,13 +83,13 @@ class Database extends GetxController {
     }
   }
 
-  void roomCreateSubmitted(String name) {
+  void roomCreateSubmitted({String name, File imgFile}) {
     if (UserController.to.user != null) {
-      _createdRoom(name: name, user: UserController.to.user);
+      _createdRoom(name: name, user: UserController.to.user, imgFile: imgFile);
     }
   }
 
-  Future<void> imageRoom(File imgFile) async {
+  Future<String> _imageRoom(File imgFile) async {
     try {
       final StorageUploadTask task = FirebaseStorage.instance
           .ref()
@@ -100,17 +100,17 @@ class Database extends GetxController {
 
       final StorageTaskSnapshot taskSnapshot = await task.onComplete;
       final String url = await taskSnapshot.ref.getDownloadURL() as String;
-      imgUrl = url;
+      return imgUrl = url;
     } catch (e) {
       print('Erro de imagem: /$e');
       rethrow;
     }
   }
 
-  Future<void> _createdRoom({String name, UserModel user}) async {
+  Future<void> _createdRoom({String name, UserModel user, File imgFile}) async {
     try {
       final doc = await _firestore.collection('rooms').add({
-        'imgUrl': imgUrl,
+        'imgUrl': await _imageRoom(imgFile),
         'name': name,
         'admUserId': user.id,
       });
@@ -126,16 +126,29 @@ class Database extends GetxController {
     }
   }
 
-  Future<List<RoomModel>> loadRooms() async {
-    final List<Map<String, dynamic>> _rooms = [];
-    _firestore.collection('rooms').snapshots().listen((snapshot) {
-      _rooms.clear();
-      for (final DocumentSnapshot dados in snapshot.documents) {
-        _rooms.add(dados.data);
-      }
-    });
+  Future<List<RoomModel>> loadRooms(String userId) async {
+    try {
+      final QuerySnapshot userRooms = await _firestore
+          .collection('users')
+          .document(userId)
+          .collection('rooms')
+          .getDocuments();
 
-    return _rooms.map((map) => RoomModel.fromMap(map)).toList();
+      final List<Map<String, dynamic>> allRooms = [];
+
+      for (final DocumentSnapshot room in userRooms.documents) {
+        final DocumentSnapshot roomDoc = await _firestore
+            .collection('rooms')
+            .document(room.data['id'].toString())
+            .get();
+
+        allRooms.add(roomDoc.data);
+      }
+
+      return allRooms.map((map) => RoomModel.fromMap(map)).toList();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> _sendMessage({String text, File imgFile, UserModel user}) async {

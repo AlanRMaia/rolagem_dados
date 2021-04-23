@@ -44,10 +44,11 @@ class _TextComposerState extends State<TextComposer> {
             IconButton(
               icon: const Icon(Icons.photo_camera),
               onPressed: () async {
-                final File imgFile =
-                    await ImagePicker.pickImage(source: ImageSource.camera);
+                final picker = ImagePicker();
+                final imgFile =
+                    await picker.getImage(source: ImageSource.camera);
                 if (imgFile == null) return;
-                _database.handleSubmitted(imgFile: imgFile);
+                _database.handleSubmitted(imgFile: File(imgFile.path));
                 _reset();
               },
             ),
