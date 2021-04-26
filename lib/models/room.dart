@@ -30,6 +30,7 @@ class RoomModel {
 
   factory RoomModel.fromMap(Map<String, dynamic> map) {
     return RoomModel(
+      id: map['id'] as String,
       name: map['name'] as String ?? '',
       imgUrl: map['imgUrl'] as String,
       admUserId: map['admUserId'] as String ?? '',

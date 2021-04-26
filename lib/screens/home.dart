@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/home_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
+import 'package:rolagem_dados/screens/chat/chat_screen.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/widget/homePage/image_room_preview.dart';
 import 'package:rolagem_dados/widget/my_text_button.dart';
@@ -62,6 +63,9 @@ class Home extends GetWidget<AuthController> {
                             ),
                             title: Text(state[index].name),
                             subtitle: Text(state[index].admUserId),
+                            autofocus: true,
+                            onTap: () => Get.toNamed('/chatscreen',
+                                arguments: state[index]),
                           ),
                         );
                       }),
@@ -70,7 +74,7 @@ class Home extends GetWidget<AuthController> {
               MyTextButton(
                 buttonName: 'ChatTest',
                 onTap: () {
-                  Get.toNamed('chatscreen');
+                  Get.toNamed('/chatscreen');
                 },
                 bgColor: Colors.white,
                 textColor: Colors.black87,

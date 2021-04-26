@@ -99,7 +99,7 @@ class SignUp extends GetWidget<AuthController> {
                               style: kBodyText,
                             ),
                             GestureDetector(
-                              onTap: () => Get.toNamed('login'),
+                              onTap: () => Get.toNamed('/login'),
                               child: Text(
                                 "Sign In",
                                 style: kBodyText.copyWith(

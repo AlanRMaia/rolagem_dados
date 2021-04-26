@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/models/user.dart';
+import 'package:uuid/uuid.dart';
 
 class Database extends GetxController {
   final Firestore _firestore = Firestore.instance;
@@ -77,9 +78,13 @@ class Database extends GetxController {
     });
   }
 
-  void handleSubmitted({String text, File imgFile}) {
+  void handleSubmitted({String text, File imgFile, RoomModel room}) {
     if (UserController.to.user != null) {
-      _sendMessage(text: text, user: UserController.to.user, imgFile: imgFile);
+      _sendMessage(
+          text: text,
+          user: UserController.to.user,
+          imgFile: imgFile,
+          room: room);
     }
   }
 
@@ -115,6 +120,15 @@ class Database extends GetxController {
         'admUserId': user.id,
       });
       final id = doc.documentID;
+
+      await _firestore.collection('rooms').document(id).updateData({'id': id});
+
+      // await _firestore
+      //     .collection('rooms')
+      //     .document(id)
+      //     .collection('messages')
+      //     .add({});
+
       await _firestore
           .collection('users')
           .document(user.id)
@@ -122,6 +136,23 @@ class Database extends GetxController {
           .add({'id': id});
     } catch (e) {
       print('Erro ao criar uma sala $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> loadRoom(String idRoom) async {
+    try {
+      Map<String, dynamic> _room = {};
+      Firestore.instance
+          .collection('rooms')
+          .document(idRoom)
+          .snapshots()
+          .listen((doc) {
+        _room = doc.data;
+      });
+
+      return _room;
+    } catch (e) {
       rethrow;
     }
   }
@@ -151,7 +182,8 @@ class Database extends GetxController {
     }
   }
 
-  Future<void> _sendMessage({String text, File imgFile, UserModel user}) async {
+  Future<void> _sendMessage(
+      {String text, File imgFile, UserModel user, RoomModel room}) async {
     try {
       if (imgFile != null) {
         final StorageUploadTask task = FirebaseStorage.instance
@@ -163,7 +195,11 @@ class Database extends GetxController {
         final StorageTaskSnapshot taskSnapshot = await task.onComplete;
         final String url = await taskSnapshot.ref.getDownloadURL() as String;
 
-        await _firestore.collection('messages').add({
+        await _firestore
+            .collection('rooms')
+            .document(room.id)
+            .collection('messages')
+            .add({
           'imgUrl': url,
           'text': text,
           'senderName': user.name,
@@ -172,7 +208,11 @@ class Database extends GetxController {
           'time': Timestamp.now()
         });
       } else {
-        await _firestore.collection('messages').add({
+        await _firestore
+            .collection('rooms')
+            .document(room.id)
+            .collection('messages')
+            .add({
           'text': text,
           'imgUrl': imgFile,
           'senderName': user.name,

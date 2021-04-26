@@ -4,25 +4,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rolagem_dados/controllers/text_composer_controller.dart';
+import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 
-class TextComposer extends StatefulWidget {
-  @override
-  _TextComposerState createState() => _TextComposerState();
-}
+class TextComposer extends StatelessWidget {
+  final RoomModel roomModel;
+  TextComposer({Key key, this.roomModel}) : super(key: key);
 
-class _TextComposerState extends State<TextComposer> {
   final TextEditingController _textController = TextEditingController();
   final Database _database = Get.put(Database());
+  final TextComposerController controller = Get.put(TextComposerController());
 
-  bool _isComposing =
-      false; //serve para acompanhar a mudança de estado da caixa de texto. Se ela está preenchida ou não antes de enviar a mensagem.
+  //serve para acompanhar a mudança de estado da caixa de texto. Se ela está preenchida ou não antes de enviar a mensagem.
 
   void _reset() {
     _textController.clear();
-    setState(() {
-      _isComposing = false;
-    });
   }
 
   @override
@@ -53,51 +50,52 @@ class _TextComposerState extends State<TextComposer> {
               },
             ),
             Expanded(
-                child: TextField(
-              controller: _textController,
-              decoration:
-                  const InputDecoration(hintText: 'Enviar uma mensagem'),
-              onChanged: (text) {
-                setState(() {
-                  _isComposing = text.isNotEmpty;
-                });
-              },
-              onSubmitted: (text) {
-                if (_isComposing) {
-                  _database.handleSubmitted(text: text);
-                  _reset();
-                } else {
-                  Get.snackbar(
-                    'Erro ao tentar enviar a mensagem',
-                    'Sua caixa de texto está vazia',
-                    snackPosition: SnackPosition.TOP,
-                  );
-                }
-              },
-            )),
+                child: Obx(() => TextField(
+                      controller: _textController,
+                      decoration: const InputDecoration(
+                          hintText: 'Enviar uma mensagem'),
+                      onChanged: (text) {
+                        controller.isComposing = text.isNotEmpty;
+                      },
+                      onSubmitted: (text) {
+                        if (controller.isComposing) {
+                          _database.handleSubmitted(
+                              text: text, room: roomModel);
+                          _reset();
+                        } else {
+                          Get.snackbar(
+                            'Erro ao tentar enviar a mensagem',
+                            'Sua caixa de texto está vazia',
+                            snackPosition: SnackPosition.TOP,
+                          );
+                        }
+                      },
+                    ))),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 4),
               child: Get.theme.platform == TargetPlatform.iOS
-                  ? CupertinoButton(
-                      onPressed: _isComposing
-                          ? () {
-                              _database.handleSubmitted(
-                                  text: _textController.text);
-                              _reset();
-                            }
-                          : null,
-                      child: const Text('Enviar'),
-                    )
-                  : IconButton(
-                      onPressed: _isComposing
-                          ? () {
-                              _database.handleSubmitted(
-                                  text: _textController.text);
-                              _reset();
-                            }
-                          : null,
-                      icon: const Icon(Icons.send),
-                    ),
+                  ? Obx(() => CupertinoButton(
+                        onPressed: controller.isComposing
+                            ? () {
+                                _database.handleSubmitted(
+                                    text: _textController.text,
+                                    room: roomModel);
+                                _reset();
+                              }
+                            : null,
+                        child: const Icon(Icons.send),
+                      ))
+                  : Obx(() => IconButton(
+                        onPressed: controller.isComposing
+                            ? () {
+                                _database.handleSubmitted(
+                                    text: _textController.text,
+                                    room: roomModel);
+                                _reset();
+                              }
+                            : null,
+                        icon: const Icon(Icons.send),
+                      )),
             ),
           ],
         ),

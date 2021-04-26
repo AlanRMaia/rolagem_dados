@@ -25,16 +25,16 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       getPages: [
         GetPage(
-          name: 'chatscreen',
+          name: '/chatscreen',
           page: () => ChatScreen(),
           binding: ChatScreenBindings(),
         ),
         GetPage(
-          name: 'signup',
+          name: '/signup',
           page: () => SignUp(),
         ),
         GetPage(
-          name: 'login',
+          name: '/login',
           page: () => Login(),
         ),
       ],

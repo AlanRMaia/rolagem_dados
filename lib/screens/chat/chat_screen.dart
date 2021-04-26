@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/chat_screen_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
+import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/screens/chat/chat_message.dart';
 import 'text_composer.dart';
 
 class ChatScreen extends GetView<ChatScreenController> {
+  const ChatScreen();
   @override
   Widget build(BuildContext context) {
+    final RoomModel _room = Get.arguments as RoomModel;
     return SafeArea(
       bottom: false,
       top: false,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Chat App'),
+          title: Text(_room.name),
           centerTitle: true,
           elevation: Get.theme.platform == TargetPlatform.iOS ? 0 : 4,
         ),
@@ -25,7 +28,7 @@ class ChatScreen extends GetView<ChatScreenController> {
                   return ListView.builder(
                     reverse: true, //serve para inverter a ordem da lista
                     itemCount: state.length,
-                    itemBuilder: (context, index) {                      
+                    itemBuilder: (context, index) {
                       return ChatMessage(
                           state[index],
                           state[index]
@@ -42,7 +45,7 @@ class ChatScreen extends GetView<ChatScreenController> {
             const Divider(height: 1),
             Container(
               decoration: BoxDecoration(color: Get.theme.cardColor),
-              child: TextComposer(),
+              child: TextComposer(roomModel: _room),
             ),
           ],
         ),

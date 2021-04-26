@@ -18,7 +18,7 @@ class Presentation extends StatelessWidget {
                     child: MyTextButton(
                         buttonName: 'Registro',
                         onTap: () {
-                          Get.toNamed('signup');
+                          Get.toNamed('/signup');
                         },
                         bgColor: Colors.white,
                         textColor: Colors.black87),
@@ -27,7 +27,7 @@ class Presentation extends StatelessWidget {
                     child: MyTextButton(
                         buttonName: 'Sign In',
                         onTap: () {
-                          Get.toNamed('login');
+                          Get.toNamed('/login');
                         },
                         bgColor: Colors.transparent,
                         textColor: Colors.white),

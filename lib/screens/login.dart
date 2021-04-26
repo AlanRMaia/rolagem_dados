@@ -81,7 +81,7 @@ class Login extends GetWidget<AuthController> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Get.toNamed('signup');
+                              Get.toNamed('/signup');
                             },
                             child: Text(
                               'Register',

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:rolagem_dados/models/room.dart';
 
 import 'package:rolagem_dados/services/data_base.dart';
 
@@ -9,15 +10,18 @@ class ChatScreenController extends GetxController
   final Database _database;
 
   ChatScreenController(this._database);
-  // ChatScreenController() {
-  //   loadMessages();
-  // }
 
   @override
   void onInit() {
+    loadMessages(Get.arguments as RoomModel);
     super.onInit();
-    loadMessages();
   }
+
+  final Rx<RoomModel> _room = RoomModel().obs;
+
+  RoomModel get room => _room.value;
+
+  set room(RoomModel value) => _room.value = value;
 
   // Future<void> loadMessages() async {
   //   change([], status: RxStatus.loading());
@@ -36,8 +40,15 @@ class ChatScreenController extends GetxController
     return _messages;
   }
 
-  Future<void> loadMessages() async {
+  Future<void> loadRoom(String idRoom) async {
+    final data = RoomModel.fromMap(await _database.loadRoom(idRoom));
+    room = data;
+  }
+
+  Future<void> loadMessages(RoomModel room) async {
     _firestore
+        .collection('rooms')
+        .document(room.id)
         .collection('messages')
         .orderBy('time', descending: true)
         .snapshots()
