@@ -8,97 +8,103 @@ import 'package:rolagem_dados/controllers/text_composer_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 
-class TextComposer extends StatelessWidget {
+class TextComposer extends StatefulWidget {
   final RoomModel roomModel;
-  TextComposer({Key key, this.roomModel}) : super(key: key);
+  const TextComposer({Key key, this.roomModel}) : super(key: key);
 
+  @override
+  _TextComposerState createState() => _TextComposerState();
+}
+
+class _TextComposerState extends State<TextComposer> {
   final TextEditingController _textController = TextEditingController();
-  final Database _database = Get.put(Database());
-  final TextComposerController controller = Get.put(TextComposerController());
+  final TextComposerController controller = TextComposerController(Database());
 
-  //serve para acompanhar a mudança de estado da caixa de texto. Se ela está preenchida ou não antes de enviar a mensagem.
+  bool _isComposing = false;
 
   void _reset() {
-    _textController.clear();
+    setState(() {
+      _textController.clear();
+      _isComposing = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return IconTheme(
-      //sempre que for diferenciar um tema em uma parte especifica tem que usar o widget Theme(nesse caso o IconTheme)
-      data: IconThemeData(color: Get.theme.accentColor),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: Get.theme.platform == TargetPlatform.iOS
-            ? BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: Colors.grey[200]),
-                ),
-              )
-            : null,
-        child: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.photo_camera),
-              onPressed: () async {
-                final picker = ImagePicker();
-                final imgFile =
-                    await picker.getImage(source: ImageSource.camera);
-                if (imgFile == null) return;
-                _database.handleSubmitted(imgFile: File(imgFile.path));
-                _reset();
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: Get.theme.platform == TargetPlatform.iOS
+          ? BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.grey[200]),
+              ),
+            )
+          : null,
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.photo_camera),
+            onPressed: () async {
+              final picker = ImagePicker();
+              final imgFile = await picker.getImage(source: ImageSource.camera);
+              if (imgFile == null) return;
+              controller.handleSubmitted(
+                  imgFile: File(imgFile.path), room: widget.roomModel);
+              _reset();
+            },
+          ),
+          Expanded(
+            child: TextField(
+              controller: _textController,
+              decoration:
+                  const InputDecoration(hintText: 'Enviar uma mensagem'),
+              onChanged: (text) {
+                setState(() {
+                  _isComposing = text.isNotEmpty;
+                });
+              },
+              onSubmitted: (text) {
+                if (_isComposing) {
+                  controller.handleSubmitted(
+                      text: text, room: widget.roomModel);
+                  _reset();
+                } else {
+                  Get.snackbar(
+                    'Erro ao tentar enviar a mensagem',
+                    'Sua caixa de texto está vazia',
+                    snackPosition: SnackPosition.TOP,
+                  );
+                }
               },
             ),
-            Expanded(
-                child: Obx(() => TextField(
-                      controller: _textController,
-                      decoration: const InputDecoration(
-                          hintText: 'Enviar uma mensagem'),
-                      onChanged: (text) {
-                        controller.isComposing = text.isNotEmpty;
-                      },
-                      onSubmitted: (text) {
-                        if (controller.isComposing) {
-                          _database.handleSubmitted(
-                              text: text, room: roomModel);
-                          _reset();
-                        } else {
-                          Get.snackbar(
-                            'Erro ao tentar enviar a mensagem',
-                            'Sua caixa de texto está vazia',
-                            snackPosition: SnackPosition.TOP,
-                          );
-                        }
-                      },
-                    ))),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              child: Get.theme.platform == TargetPlatform.iOS
-                  ? Obx(() => CupertinoButton(
-                        onPressed: controller.isComposing
-                            ? () {
-                                _database.handleSubmitted(
-                                    text: _textController.text,
-                                    room: roomModel);
-                                _reset();
-                              }
-                            : null,
-                        child: const Icon(Icons.send),
-                      ))
-                  : Obx(() => IconButton(
-                        onPressed: controller.isComposing
-                            ? () {
-                                _database.handleSubmitted(
-                                    text: _textController.text,
-                                    room: roomModel);
-                                _reset();
-                              }
-                            : null,
-                        icon: const Icon(Icons.send),
-                      )),
-            ),
-          ],
-        ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            child: Get.theme.platform == TargetPlatform.iOS
+                ? CupertinoButton(
+                    onPressed: _isComposing
+                        ? () {
+                            controller.handleSubmitted(
+                                text: _textController.text,
+                                room: widget.roomModel);
+                            _reset();
+                          }
+                        : null,
+                    child: const Icon(Icons.send),
+                  )
+                : IconButton(
+                    onPressed: _isComposing
+                        ? () {
+                            controller.handleSubmitted(
+                                text: _textController.text,
+                                room: widget.roomModel);
+                            _reset();
+                          }
+                        : null,
+                    icon: const Icon(Icons.send),
+                  ),
+          ),
+        ],
       ),
     );
   }

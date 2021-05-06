@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rolagem_dados/controllers/bindings/auth_binding.dart';
+import 'package:rolagem_dados/controllers/bindings/bottom_bar_pages_bindings.dart';
 import 'package:rolagem_dados/controllers/bindings/chatScreen_bindings.dart';
+import 'package:rolagem_dados/screens/bottom_bar_pages.dart';
 import 'package:rolagem_dados/screens/chat/chat_screen.dart';
 import 'package:rolagem_dados/screens/login.dart';
 import 'package:rolagem_dados/screens/signup.dart';
@@ -23,6 +25,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       initialBinding: AuthBinding(),
       debugShowCheckedModeBanner: false,
+      locale: Get.deviceLocale,
       getPages: [
         GetPage(
           name: '/chatscreen',
@@ -39,11 +42,11 @@ class MyApp extends StatelessWidget {
         ),
       ],
       theme: ThemeData(
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
-        scaffoldBackgroundColor: kBackgroundColor,
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+          textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
+          scaffoldBackgroundColor: kBackgroundColor,
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          iconTheme: const IconThemeData(color: Colors.black87)),
       home: Root(),
     );
   }

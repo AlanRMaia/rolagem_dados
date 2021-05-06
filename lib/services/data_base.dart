@@ -78,20 +78,20 @@ class Database extends GetxController {
     });
   }
 
-  void handleSubmitted({String text, File imgFile, RoomModel room}) {
-    if (UserController.to.user != null) {
-      _sendMessage(
-          text: text,
-          user: UserController.to.user,
-          imgFile: imgFile,
-          room: room);
-    }
+  void handleSubmitted(
+      {String text, File imgFile, RoomModel room, String url, UserModel user}) {
+    _sendMessage(
+        text: text, user: user, imgFile: imgFile, room: room, url: url);
   }
 
   void roomCreateSubmitted({String name, File imgFile}) {
     if (UserController.to.user != null) {
       _createdRoom(name: name, user: UserController.to.user, imgFile: imgFile);
     }
+  }
+
+  void addUserRoomSubmitted(String idRoom) {
+    _addUserRoom(idRoom);
   }
 
   Future<String> _imageRoom(File imgFile) async {
@@ -112,6 +112,10 @@ class Database extends GetxController {
     }
   }
 
+  Future<void> _addUserRoom(String idRoom) async {
+    try {} catch (e) {}
+  }
+
   Future<void> _createdRoom({String name, UserModel user, File imgFile}) async {
     try {
       final doc = await _firestore.collection('rooms').add({
@@ -122,12 +126,6 @@ class Database extends GetxController {
       final id = doc.documentID;
 
       await _firestore.collection('rooms').document(id).updateData({'id': id});
-
-      // await _firestore
-      //     .collection('rooms')
-      //     .document(id)
-      //     .collection('messages')
-      //     .add({});
 
       await _firestore
           .collection('users')
@@ -182,20 +180,38 @@ class Database extends GetxController {
     }
   }
 
+  StorageUploadTask storageUpload(File imgFile) {
+    try {
+      return FirebaseStorage.instance
+          .ref()
+          .child(UserController.to.user.id +
+              DateTime.now().millisecondsSinceEpoch.toString())
+          .putFile(imgFile);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<String> storageDownloadUrl(StorageUploadTask task) async {
+    try {
+      final StorageTaskSnapshot taskSnapshot = await task.onComplete;
+      return await taskSnapshot.ref.getDownloadURL() as String;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
   Future<void> _sendMessage(
-      {String text, File imgFile, UserModel user, RoomModel room}) async {
+      {String text,
+      File imgFile,
+      UserModel user,
+      RoomModel room,
+      String url}) async {
     try {
       if (imgFile != null) {
-        final StorageUploadTask task = FirebaseStorage.instance
-            .ref()
-            .child(UserController.to.user.id +
-                DateTime.now().millisecondsSinceEpoch.toString())
-            .putFile(imgFile);
-
-        final StorageTaskSnapshot taskSnapshot = await task.onComplete;
-        final String url = await taskSnapshot.ref.getDownloadURL() as String;
-
-        await _firestore
+        final message = await _firestore
             .collection('rooms')
             .document(room.id)
             .collection('messages')
@@ -205,10 +221,20 @@ class Database extends GetxController {
           'senderName': user.name,
           'senderPhotoUrl': user.image,
           'uid': user.id,
+          'idRoom': room.id,
           'time': Timestamp.now()
         });
-      } else {
+
+        final id = message.documentID;
+
         await _firestore
+            .collection('rooms')
+            .document(room.id)
+            .collection('messages')
+            .document(id)
+            .updateData({'id': id});
+      } else {
+        final message = await _firestore
             .collection('rooms')
             .document(room.id)
             .collection('messages')
@@ -218,9 +244,61 @@ class Database extends GetxController {
           'senderName': user.name,
           'senderPhotoUrl': user.image,
           'uid': user.id,
+          'idRoom': room.id,
           'time': Timestamp.now()
         });
+
+        final id = message.documentID;
+
+        await _firestore
+            .collection('rooms')
+            .document(room.id)
+            .collection('messages')
+            .document(id)
+            .updateData({'id': id});
       }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> editSubmitted(
+      String idMessage, String message, String idRoom) async {
+    if (UserController.to.user != null) {
+      _editMessage(idMessage, message, idRoom);
+    }
+  }
+
+  Future<void> _editMessage(
+      String idMessage, String message, String idRoom) async {
+    try {
+      await _firestore
+          .collection('rooms')
+          .document(idRoom)
+          .collection('messages')
+          .document(idMessage)
+          .updateData({'text': message});
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> deleteSubmited(String idMessage, String idRoom) async {
+    if (UserController.to.user != null) {
+      _deleteMessage(idMessage, idRoom);
+    }
+  }
+
+  Future<void> _deleteMessage(String idMessage, String idRoom) async {
+    try {
+      await _firestore
+          .collection('rooms')
+          .document(idRoom)
+          .collection('messages')
+          .document(idMessage)
+          .delete();
     } catch (e) {
       print(e);
       rethrow;

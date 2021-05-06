@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
+import 'package:rolagem_dados/screens/bottom_bar_pages.dart';
 import 'package:rolagem_dados/screens/home.dart';
 import 'package:rolagem_dados/screens/presentation.dart';
 
@@ -14,7 +15,7 @@ class Root extends GetWidget<AuthController> {
       },
       builder: (_) {
         if (controller.user?.uid != null) {
-          return Home();
+          return BottomBarPages();
         } else {
           return Presentation();
         }

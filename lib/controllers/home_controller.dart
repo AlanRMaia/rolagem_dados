@@ -13,6 +13,7 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
   final picker = ImagePicker();
   File _imgFile;
   final RxString _imgUrl = ''.obs;
+  final _indexTab = 3.obs;
 
   File get imgFile => _imgFile;
   set imgFile(File value) => _imgFile = value;
@@ -22,6 +23,9 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
   set imgUrl(String value) {
     _imgUrl.value = value;
   }
+
+  set indexTab(int value) => _indexTab.value = value;
+  int get indexTab => _indexTab.value;
 
   // final _rooms = <RoomModel>[].obs;
 

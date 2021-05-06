@@ -1,24 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/chat_screen_controller.dart';
+import 'package:rolagem_dados/controllers/text_composer_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/screens/chat/chat_message.dart';
+import 'package:rolagem_dados/services/data_base.dart';
+import 'package:rolagem_dados/widget/chatmessage/dialog_text_edit_delete.dart';
 import 'text_composer.dart';
 
 class ChatScreen extends GetView<ChatScreenController> {
-  const ChatScreen();
+  ChatScreen();
+  final TextEditingController _textController = TextEditingController();
+  final TextComposerController composerController =
+      Get.put(TextComposerController(Database()));
+
   @override
   Widget build(BuildContext context) {
     final RoomModel _room = Get.arguments as RoomModel;
+    Map<String, dynamic> data = {};
     return SafeArea(
       bottom: false,
       top: false,
       child: Scaffold(
         appBar: AppBar(
+          actions: [
+            IconButton(
+                icon: const Icon(Icons.group_add),
+                onPressed: () {
+                  return showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: TextField(),
+                        );
+                      });
+                })
+          ],
+          backgroundColor: Colors.black87,
           title: Text(_room.name),
           centerTitle: true,
-          elevation: Get.theme.platform == TargetPlatform.iOS ? 0 : 4,
+          elevation: 0,
         ),
         body: Column(
           children: [
@@ -30,9 +52,10 @@ class ChatScreen extends GetView<ChatScreenController> {
                     itemCount: state.length,
                     itemBuilder: (context, index) {
                       return ChatMessage(
-                          state[index],
-                          state[index]
-                              .containsValue(UserController.to.user?.id));
+                        data: state[index],
+                        mine: state[index]
+                            .containsValue(UserController.to.user?.id),
+                      );
                     },
                   );
                 },
@@ -42,11 +65,16 @@ class ChatScreen extends GetView<ChatScreenController> {
                 },
               ),
             ),
+            Obx(() {
+              return composerController.isLoading
+                  ? const LinearProgressIndicator()
+                  : Container();
+            }),
             const Divider(height: 1),
             Container(
               decoration: BoxDecoration(color: Get.theme.cardColor),
               child: TextComposer(roomModel: _room),
-            ),
+            )
           ],
         ),
       ),

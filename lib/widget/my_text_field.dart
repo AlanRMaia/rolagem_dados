@@ -9,17 +9,22 @@ class MyTextField extends StatelessWidget {
     @required this.hintText,
     @required this.inputType,
     this.textColor,
+    this.onChaged,
+    this.voidCallback,
   }) : super(key: key);
   final String hintText;
   final TextInputType inputType;
   final TextEditingController controller;
   final Color textColor;
+  final Function(dynamic) onChaged;
+  final VoidCallback voidCallback;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextField(
+        onChanged: onChaged,
         controller: controller,
         style: kBodyText.copyWith(color: textColor),
         keyboardType: inputType,

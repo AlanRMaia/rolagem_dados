@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/models/room.dart';
 
 import 'package:rolagem_dados/services/data_base.dart';
+
+import 'user_controller.dart';
 
 class ChatScreenController extends GetxController
     with StateMixin<List<Map<String, dynamic>>> {
@@ -16,6 +20,11 @@ class ChatScreenController extends GetxController
     loadMessages(Get.arguments as RoomModel);
     super.onInit();
   }
+
+  final _isLoading = false.obs;
+
+  set isLoading(bool value) => _isLoading.value = value;
+  bool get isLoading => _isLoading.value;
 
   final Rx<RoomModel> _room = RoomModel().obs;
 
