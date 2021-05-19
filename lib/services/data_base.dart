@@ -304,4 +304,69 @@ class Database extends GetxController {
       rethrow;
     }
   }
+
+  Future<List<Map<String, dynamic>>> loadFriends(String userId) async {
+    try {
+      final QuerySnapshot userFriends = await _firestore
+          .collection('users')
+          .document(userId)
+          .collection('friends')
+          .getDocuments();
+
+      final List<Map<String, dynamic>> allFriends = [];
+
+      for (final DocumentSnapshot friendDoc in userFriends.documents) {
+        final DocumentSnapshot friend = await _firestore
+            .collection('users')
+            .document(friendDoc.data['id'].toString())
+            .get();
+
+        allFriends.add(friend.data);
+      }
+
+      return allFriends;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> addFriendSubmited(String friendId) async {
+    if (UserController.to.user != null) {
+      _addFriend(UserController.to.user.id, friendId);
+    }
+  }
+
+  Future<void> _addFriend(String userId, String friendId) async {
+    try {
+      _firestore
+          .collection('users')
+          .document(userId)
+          .collection('friends')
+          .add({'id': friendId});
+    } catch (e) {
+      print(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> resultFriends(String name) async {
+    try {
+      final QuerySnapshot userFriends =
+          await _firestore.collection('users').getDocuments();
+
+      final List<Map<String, dynamic>> allFriends = [];
+
+      for (final DocumentSnapshot friendDoc in userFriends.documents) {
+        if (friendDoc.data['name'] == name) {
+          allFriends.add(friendDoc?.data);
+        }
+      }
+
+      return allFriends;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
 }

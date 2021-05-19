@@ -9,6 +9,7 @@ import 'package:rolagem_dados/widget/home/dialog_room_create.dart';
 class Home extends GetWidget<AuthController> {
   final TextEditingController nameController = TextEditingController();
   final HomeController _homeController = Get.put(HomeController(Database()));
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +23,7 @@ class Home extends GetWidget<AuthController> {
           initState: (_) async {
             Get.find<UserController>().user =
                 await Database().getUser(controller.user.uid);
-            await _homeController.loadingRooms(controller.user.uid);
+            _homeController.loadRooms(UserController.to.user.id);
           },
           builder: (_) {
             if (_.user.name != null) {
@@ -56,11 +57,11 @@ class Home extends GetWidget<AuthController> {
                         return Card(
                           child: ListTile(
                             leading: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(state[index].imgUrl),
+                              backgroundImage: NetworkImage(
+                                  state[index]['imgUrl'] as String),
                             ),
-                            title: Text(state[index].name),
-                            subtitle: Text(state[index].admUserId),
+                            title: Text(state[index]['name'] as String),
+                            subtitle: Text(state[index]['admUserId'] as String),
                             autofocus: true,
                             onTap: () => Get.toNamed('/chatscreen',
                                 arguments: state[index]),

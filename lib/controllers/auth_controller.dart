@@ -6,6 +6,7 @@ import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/utils/root.dart';
 
 class AuthController extends GetxController {
+  static AuthController get to => Get.find();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Rx<FirebaseUser> _firebaseUser = Rx<FirebaseUser>();
   final _isPassWordVisible = false.obs;

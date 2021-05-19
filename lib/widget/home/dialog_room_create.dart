@@ -13,12 +13,14 @@ class DialogRoomCreate extends StatelessWidget {
   final HomeController controller;
   final AuthController controllerAuth;
   final TextEditingController textController;
+  final VoidCallback voidCallback;
 
   const DialogRoomCreate(
       {Key key,
       @required this.controller,
       @required this.textController,
-      this.controllerAuth})
+      this.controllerAuth,
+      this.voidCallback})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -78,9 +80,6 @@ class DialogRoomCreate extends StatelessWidget {
                               isLoading: controllerAuth.isLoading,
                               onTap: () async {
                                 controller.createRoom(textController.text);
-
-                                await controller
-                                    .loadingRooms(controllerAuth.user.uid);
 
                                 Get.back();
                               },

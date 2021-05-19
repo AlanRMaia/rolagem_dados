@@ -11,6 +11,8 @@ class MyTextField extends StatelessWidget {
     this.textColor,
     this.onChaged,
     this.voidCallback,
+    this.suffixIcon,
+    this.prefixIcon,
   }) : super(key: key);
   final String hintText;
   final TextInputType inputType;
@@ -18,6 +20,8 @@ class MyTextField extends StatelessWidget {
   final Color textColor;
   final Function(dynamic) onChaged;
   final VoidCallback voidCallback;
+  final Icon suffixIcon;
+  final Icon prefixIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +34,8 @@ class MyTextField extends StatelessWidget {
         keyboardType: inputType,
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
+          suffixIcon: suffixIcon,
+          prefixIcon: prefixIcon,
           contentPadding: const EdgeInsets.all(20),
           hintText: hintText,
           hintStyle: kBodyText,

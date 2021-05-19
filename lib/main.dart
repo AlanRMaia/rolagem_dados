@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rolagem_dados/controllers/bindings/auth_binding.dart';
@@ -13,6 +14,8 @@ import 'utils/root.dart';
 
 void main() {
   runApp(MyApp());
+  SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(statusBarIconBrightness: Brightness.light));
 
   // Firestore.instance.collection('teste').add(
   //   {'teste': 'teste'},

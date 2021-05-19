@@ -1,13 +1,18 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/models/user.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 
-class HomeController extends GetxController with StateMixin<List<RoomModel>> {
+class HomeController extends GetxController
+    with StateMixin<List<Map<String, dynamic>>> {
   final Database _database;
+  final Firestore _firestore = Firestore.instance;
+
   HomeController(this._database);
 
   final picker = ImagePicker();
@@ -27,11 +32,11 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
   set indexTab(int value) => _indexTab.value = value;
   int get indexTab => _indexTab.value;
 
-  // final _rooms = <RoomModel>[].obs;
+  // final _rooms = <Map<String, dynamic>>[].obs;
 
-  // List<RoomModel> get rooms => _rooms;
+  // List<Map<String, dynamic>> get rooms => _rooms;
 
-  // set rooms(List<RoomModel> value) => _rooms.addAll(value);
+  // set rooms(List<Map<String, dynamic>> value) => _rooms.addAll(value);
 
   Future<void> showImage() async {
     final pickerfile = await picker.getImage(source: ImageSource.camera);
@@ -47,15 +52,47 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
     _database.roomCreateSubmitted(name: name, imgFile: imgFile);
   }
 
-  Future<void> loadingRooms(String userId) async {
+  Future<void> loadRooms(String userId) async {
     change([], status: RxStatus.loading());
     try {
-      final rooms = await _database.loadRooms(userId);
+      final List<Map<String, dynamic>> _rooms = [];
+      _firestore
+          .collection('users')
+          .document(userId)
+          .collection('rooms')
+          .snapshots()
+          .listen((snapshot) async {
+        _rooms.clear();
 
-      change(rooms, status: RxStatus.success());
+        for (final DocumentSnapshot room in snapshot.documents) {
+          final DocumentSnapshot roomDoc = await _firestore
+              .collection('rooms')
+              .document(room.data['id'].toString())
+              .get();
+
+          _rooms.add(roomDoc.data);
+        }
+        change(_rooms, status: RxStatus.success());
+      });
+
+      // final QuerySnapshot userRooms = await _firestore
+      //     .collection('users')
+      //     .document(userId)
+      //     .collection('rooms')
+      //     .getDocuments();
+
+      // for (final DocumentSnapshot room in userRooms.documents) {
+      //   final DocumentSnapshot roomDoc = await _firestore
+      //       .collection('rooms')
+      //       .document(room.data['id'].toString())
+      //       .get();
+
+      //   _rooms.add(roomDoc.data);
+      // }
+
     } catch (e) {
-      print('Erro ao dar loading nas salas $e');
       change([], status: RxStatus.error());
+      rethrow;
     }
   }
 }
