@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/add_friend_controller.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/screens/userprofile/user_friend_profile.dart';
+import 'package:rolagem_dados/widget/addfriend/dialog_add_friend.dart';
 import 'package:rolagem_dados/widget/my_search_field.dart';
 import 'package:rolagem_dados/widget/my_text_field.dart';
 
@@ -11,14 +12,25 @@ class AddFriend extends GetView<AuthController> {
   final AddFriendController _friendController = Get.put(AddFriendController());
 
   void _seachFriend() {
-    _friendController.allResultsFriends(_textController.text);
+    AddFriendController.to.allResultsFriends(_textController.text);
     _clear();
+    AddFriendController.to.isEmpty = !AddFriendController.to.isEmpty;
   }
 
   void _clear() => _textController.text = '';
 
+  void _addFriend(String friendId) {
+    AddFriendController.to.addFriend(friendId);
+  }
+
+  void _reload() {
+    AddFriendController.to.loadFriends();
+  }
+
   @override
   Widget build(BuildContext context) {
+    AddFriendController.to.loadFriends();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -26,61 +38,75 @@ class AddFriend extends GetView<AuthController> {
         toolbarHeight: 70,
         title: Container(
           margin: const EdgeInsets.fromLTRB(5, 20, 1, 14),
-          child: Obx(() => MySearchField(
-                voidCallback: _seachFriend,
-                controller: _textController,
-                showButton: _friendController.isEmpty,
-                onSubmited: (text) {
-                  _friendController.allResultsFriends(text);
-                  _clear();
-                },
-                onChanged: (text) {
-                  _friendController.isEmpty = text.isNotEmpty;
-                },
-              )),
+          child: Obx(
+            () => MySearchField(
+              voidCallback: _seachFriend,
+              controller: _textController,
+              showButton: AddFriendController.to.isEmpty,
+              onSubmited: (text) {
+                AddFriendController.to.allResultsFriends(text);
+                _clear();
+              },
+              onChanged: (text) {
+                AddFriendController.to.isEmpty = text.isNotEmpty;
+              },
+            ),
+          ),
         ),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Obx(() => _friendController.resultFriends.isNotEmpty
+          Obx(() => AddFriendController.to.resultFriends.isNotEmpty
               ? SizedBox(
                   height: 100,
                   child: ListView.builder(
-                      itemCount: _friendController.resultFriends.length,
+                      itemCount: AddFriendController.to.resultFriends.length,
                       itemBuilder: (context, index) {
                         return ListTile(
                               onTap: () {
-                                Get.to(() => UserFriendProfile(),
-                                    arguments:
-                                        _friendController.resultFriends[index]);
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return DialogAddFriend(
+                                        data: AddFriendController
+                                            .to.resultFriends[index],
+                                        voidCallback: () {
+                                          _addFriend(AddFriendController
+                                                  .to.resultFriends[index]['id']
+                                              as String);
+                                        },
+                                        voidCallbackReload: () {
+                                          _reload();
+                                        },
+                                      );
+                                    });
                               },
                               leading: CircleAvatar(
-                                backgroundImage: NetworkImage(_friendController
-                                    .resultFriends[index]['image'] as String),
+                                backgroundImage: NetworkImage(
+                                    AddFriendController.to.resultFriends[index]
+                                        ['image'] as String),
                               ),
-                              title: Text(_friendController.resultFriends[index]
-                                  ['name'] as String),
-                              subtitle: Text(_friendController
-                                  .resultFriends[index]['id'] as String),
+                              title: Text(AddFriendController
+                                  .to.resultFriends[index]['name'] as String),
+                              subtitle: Text(AddFriendController
+                                  .to.resultFriends[index]['id'] as String),
                             ) ??
                             const CircularProgressIndicator();
                       }),
                 )
               : Container()),
           Flexible(
-            child: _friendController.obx((state) => ListView.builder(
+            child: AddFriendController.to.obx((state) => ListView.builder(
                 itemCount: state.length,
                 itemBuilder: (context, index) {
-                  return GestureDetector(
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(state[index]['image'] as String),
-                      ),
-                      title: Text(state[index]['name'] as String),
-                      subtitle: Text(state[index]['name'] as String),
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage:
+                          NetworkImage(state[index]['image'] as String),
                     ),
+                    title: Text(state[index]['name'] as String),
+                    subtitle: Text(state[index]['name'] as String),
                   );
                 })),
           )

@@ -8,8 +8,7 @@ import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/models/user.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 
-class HomeController extends GetxController
-    with StateMixin<List<Map<String, dynamic>>> {
+class HomeController extends GetxController with StateMixin<List<RoomModel>> {
   final Database _database;
   final Firestore _firestore = Firestore.instance;
 
@@ -55,7 +54,7 @@ class HomeController extends GetxController
   Future<void> loadRooms(String userId) async {
     change([], status: RxStatus.loading());
     try {
-      final List<Map<String, dynamic>> _rooms = [];
+      final List<RoomModel> _rooms = [];
       _firestore
           .collection('users')
           .document(userId)
@@ -70,26 +69,10 @@ class HomeController extends GetxController
               .document(room.data['id'].toString())
               .get();
 
-          _rooms.add(roomDoc.data);
+          _rooms.add(RoomModel.fromDocumentSnapsho(roomDoc));
         }
         change(_rooms, status: RxStatus.success());
       });
-
-      // final QuerySnapshot userRooms = await _firestore
-      //     .collection('users')
-      //     .document(userId)
-      //     .collection('rooms')
-      //     .getDocuments();
-
-      // for (final DocumentSnapshot room in userRooms.documents) {
-      //   final DocumentSnapshot roomDoc = await _firestore
-      //       .collection('rooms')
-      //       .document(room.data['id'].toString())
-      //       .get();
-
-      //   _rooms.add(roomDoc.data);
-      // }
-
     } catch (e) {
       change([], status: RxStatus.error());
       rethrow;

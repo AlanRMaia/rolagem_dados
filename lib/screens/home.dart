@@ -57,11 +57,11 @@ class Home extends GetWidget<AuthController> {
                         return Card(
                           child: ListTile(
                             leading: CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                  state[index]['imgUrl'] as String),
+                              backgroundImage:
+                                  NetworkImage(state[index].imgUrl),
                             ),
-                            title: Text(state[index]['name'] as String),
-                            subtitle: Text(state[index]['admUserId'] as String),
+                            title: Text(state[index].name),
+                            subtitle: Text(state[index].admUserId),
                             autofocus: true,
                             onTap: () => Get.toNamed('/chatscreen',
                                 arguments: state[index]),

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rolagem_dados/controllers/add_friend_controller.dart';
-
 import '../constants.dart';
 
 class MySearchField extends StatelessWidget {

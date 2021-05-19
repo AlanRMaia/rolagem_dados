@@ -6,7 +6,9 @@ import 'package:rolagem_dados/services/data_base.dart';
 
 class AddFriendController extends GetxController
     with StateMixin<List<Map<String, dynamic>>> {
+  static AddFriendController get to => Get.find();
   final Database _database = Get.put(Database());
+
   final _isEmpty = false.obs;
 
   bool get isEmpty => _isEmpty.value;
@@ -24,12 +26,6 @@ class AddFriendController extends GetxController
   set resultFriends(List<Map<String, dynamic>> value) =>
       _resultFriends.addAll(value);
 
-  @override
-  void onInit() {
-    loadFriends();
-    super.onInit();
-  }
-
   Future<void> loadFriends() async {
     change([], status: RxStatus.loading());
     try {
@@ -45,6 +41,15 @@ class AddFriendController extends GetxController
   Future<void> allResultsFriends(String name) async {
     try {
       resultFriends = await _database?.resultFriends(name);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> addFriend(String friendId) async {
+    try {
+      await _database.addFriendSubmited(friendId);
     } catch (e) {
       print(e);
       rethrow;
