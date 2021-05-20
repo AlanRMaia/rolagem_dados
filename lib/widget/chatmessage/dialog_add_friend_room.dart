@@ -3,20 +3,29 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/models/room.dart';
+import 'package:rolagem_dados/widget/my_search_field.dart';
 import '../my_text_button.dart';
 
-class DialogAddFriend extends StatelessWidget {
+class DialogAddFriendRoom extends StatelessWidget {
   final VoidCallback voidCallback;
   final VoidCallback voidCallbackReload;
   final Map<String, dynamic> data;
   final RoomModel model;
+  final TextEditingController editingController;
+  final ValueChanged<String> onChanged;
+  final bool showButton;
+  final Function(String) onSubmited;
 
-  const DialogAddFriend(
+  const DialogAddFriendRoom(
       {Key key,
       this.voidCallback,
       this.data,
       this.voidCallbackReload,
-      this.model})
+      this.model,
+      this.editingController,
+      this.onChanged,
+      this.showButton,
+      this.onSubmited})
       : super(key: key);
 
   @override
@@ -47,6 +56,7 @@ class DialogAddFriend extends StatelessWidget {
                 ),
                 Column(
                   children: [
+                    if (data == null && model == null) MySearchField(),
                     Text(
                       map['text'] as String,
                       style: const TextStyle(fontSize: 10),
@@ -88,11 +98,12 @@ class DialogAddFriend extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(data['image'] as String),
+                  backgroundImage:
+                      NetworkImage(data['image'] as String ?? model.imgUrl),
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  data['name'] as String,
+                  data['name'] as String ?? model.name,
                   style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ],

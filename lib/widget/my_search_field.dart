@@ -7,6 +7,7 @@ class MySearchField extends StatelessWidget {
   final bool showButton;
   final VoidCallback voidCallback;
   final Function(String) onSubmited;
+  final Object model;
 
   const MySearchField({
     Key key,
@@ -15,6 +16,7 @@ class MySearchField extends StatelessWidget {
     this.voidCallback,
     this.showButton,
     this.onSubmited,
+    this.model,
   }) : super(key: key);
 
   @override

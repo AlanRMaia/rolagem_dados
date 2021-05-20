@@ -369,4 +369,17 @@ class Database extends GetxController {
       rethrow;
     }
   }
+
+  void addFriendRoom(String friendId, String roomId) {
+    try {
+      _firestore
+          .collection('users')
+          .document(friendId)
+          .collection('rooms')
+          .add({'id': roomId});
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
 }

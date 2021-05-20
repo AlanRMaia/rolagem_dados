@@ -21,10 +21,23 @@ class ChatScreenController extends GetxController
     super.onInit();
   }
 
+  final _isEmpty = false.obs;
+
+  bool get isEmpty => _isEmpty.value;
+
+  set isEmpty(bool value) {
+    _isEmpty.value = value;
+  }
+
   final _isLoading = false.obs;
 
   set isLoading(bool value) => _isLoading.value = value;
   bool get isLoading => _isLoading.value;
+
+  final _showSearch = false.obs;
+
+  set showSearch(bool value) => _showSearch.value = value;
+  bool get showSearch => _showSearch.value;
 
   final Rx<RoomModel> _room = RoomModel().obs;
 
