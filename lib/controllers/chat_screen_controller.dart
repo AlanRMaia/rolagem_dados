@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/models/room.dart';
+import 'package:rolagem_dados/models/user.dart';
 
 import 'package:rolagem_dados/services/data_base.dart';
 
@@ -22,27 +23,25 @@ class ChatScreenController extends GetxController
   }
 
   final _isEmpty = false.obs;
-
   bool get isEmpty => _isEmpty.value;
-
   set isEmpty(bool value) {
     _isEmpty.value = value;
   }
 
   final _isLoading = false.obs;
-
   set isLoading(bool value) => _isLoading.value = value;
   bool get isLoading => _isLoading.value;
 
   final _showSearch = false.obs;
-
   set showSearch(bool value) => _showSearch.value = value;
   bool get showSearch => _showSearch.value;
 
+  final _userFriend = <UserModel>[].obs;
+  List<UserModel> get userFriend => _userFriend;
+  set userFriend(List<UserModel> value) => _userFriend.addAll(value);
+
   final Rx<RoomModel> _room = RoomModel().obs;
-
   RoomModel get room => _room.value;
-
   set room(RoomModel value) => _room.value = value;
 
   // Future<void> loadMessages() async {
@@ -83,5 +82,23 @@ class ChatScreenController extends GetxController
       change([], status: RxStatus.loading());
       change(_messages, status: RxStatus.success());
     });
+  }
+
+  Future<void> loadFriends(String name) async {
+    try {
+      final data = await _database.loadFriends(name: name);
+      userFriend.addAll(data.map((map) => UserModel.fromMap(map)));
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> addFriendRoom(String userId, String roomId) async {
+    try {
+      _database.addFriendRoom(userId, roomId);
+    } catch (e) {
+      rethrow;
+    }
   }
 }

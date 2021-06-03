@@ -29,7 +29,8 @@ class AddFriendController extends GetxController
   Future<void> loadFriends() async {
     change([], status: RxStatus.loading());
     try {
-      final data = await _database.loadFriends(UserController.to.user.id);
+      final data =
+          await _database.loadFriends(userId: UserController.to.user.id);
       change(data, status: RxStatus.success());
     } catch (e) {
       print(e);
@@ -47,12 +48,15 @@ class AddFriendController extends GetxController
     }
   }
 
-  Future<void> addFriend(String friendId) async {
+  Future<void> addFriend(Map<String, dynamic> friendUser) async {
     try {
-      await _database.addFriendSubmited(friendId);
+      await _database.addFriendSubmited(friendUser);
     } catch (e) {
       print(e);
       rethrow;
     }
   }
+
+  
+
 }

@@ -19,8 +19,8 @@ class AddFriend extends GetView<AuthController> {
 
   void _clear() => _textController.text = '';
 
-  void _addFriend(String friendId) {
-    AddFriendController.to.addFriend(friendId);
+  void _addFriend(Map<String, dynamic> friendUser) {
+    AddFriendController.to.addFriend(friendUser);
   }
 
   void _reload() {
@@ -73,8 +73,9 @@ class AddFriend extends GetView<AuthController> {
                                             .to.resultFriends[index],
                                         voidCallback: () {
                                           _addFriend(AddFriendController
-                                                  .to.resultFriends[index]['id']
-                                              as String);
+                                              .to.resultFriends[index]);
+                                          AddFriendController.to.resultFriends
+                                              .clear();
                                         },
                                         voidCallbackReload: () {
                                           _reload();
@@ -84,13 +85,20 @@ class AddFriend extends GetView<AuthController> {
                               },
                               leading: CircleAvatar(
                                 backgroundImage: NetworkImage(
-                                    AddFriendController.to.resultFriends[index]
-                                        ['image'] as String),
+                                    AddFriendController
+                                        .to.resultFriends[index]['image']
+                                        .toString()),
                               ),
-                              title: Text(AddFriendController
-                                  .to.resultFriends[index]['name'] as String),
-                              subtitle: Text(AddFriendController
-                                  .to.resultFriends[index]['id'] as String),
+                              title: Text(
+                                  AddFriendController
+                                      .to.resultFriends[index]['name']
+                                      .toString(),
+                                  style: const TextStyle(color: Colors.white)),
+                              subtitle: Text(
+                                  AddFriendController
+                                      .to.resultFriends[index]['id']
+                                      .toString(),
+                                  style: const TextStyle(color: Colors.white)),
                             ) ??
                             const CircularProgressIndicator();
                       }),
@@ -103,10 +111,14 @@ class AddFriend extends GetView<AuthController> {
                   return ListTile(
                     leading: CircleAvatar(
                       backgroundImage:
-                          NetworkImage(state[index]['image'] as String),
+                          NetworkImage(state[index]['image'].toString()),
                     ),
-                    title: Text(state[index]['name'] as String),
-                    subtitle: Text(state[index]['name'] as String),
+                    title: Text(
+                      state[index]['name'].toString(),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(state[index]['id'].toString(),
+                        style: const TextStyle(color: Colors.white)),
                   );
                 })),
           )

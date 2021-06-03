@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/models/room.dart';
+import 'package:rolagem_dados/models/user.dart';
 import '../my_text_button.dart';
 
 class DialogAddFriend extends StatelessWidget {
   final VoidCallback voidCallback;
   final VoidCallback voidCallbackReload;
   final Map<String, dynamic> data;
+  final UserModel user;
   final RoomModel model;
 
   const DialogAddFriend(
@@ -16,15 +18,12 @@ class DialogAddFriend extends StatelessWidget {
       this.voidCallback,
       this.data,
       this.voidCallbackReload,
-      this.model})
+      this.model,
+      this.user})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final Map map = {
-      'text': 'Deseja a adicionar ${data['name'] ?? model.name} como amigo?'
-    };
-
     return Dialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
@@ -48,7 +47,9 @@ class DialogAddFriend extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      map['text'] as String,
+                      data != null
+                          ? 'Deseja a adicionar ${data['name']} como amigo?'
+                          : 'Deseja a adicionar ${user.name} como amigo?',
                       style: const TextStyle(fontSize: 10),
                     ),
                     Row(
@@ -88,11 +89,12 @@ class DialogAddFriend extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(data['image'] as String),
+                  backgroundImage: NetworkImage(
+                      data != null ? data['image'].toString() : user.image),
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  data['name'] as String,
+                  data != null ? data['name'].toString() : user.name,
                   style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ],

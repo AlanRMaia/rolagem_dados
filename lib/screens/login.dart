@@ -14,18 +14,21 @@ class Login extends GetWidget<AuthController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Image(
-            width: 24,
-            color: Colors.white,
-            image: Svg('assets/images/back_arrow.svg'),
-          ),
-        ),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Colors.black,
+      //   elevation: 0,
+      //   // leading: IconButton(
+      //   //   onPressed: () {
+      //   //     Get.back();
+      //   //     controller.isLoading = false;
+      //   //   },
+      //   //   icon: const Image(
+      //   //     width: 24,
+      //   //     color: Colors.white,
+      //   //     image: Svg('assets/images/back_arrow.svg'),
+      //   //   ),
+      //   // ),
+      // ),
       body: SafeArea(
         child: GestureDetector(
           onTap: () => Get.focusScope.unfocus(),
@@ -42,6 +45,22 @@ class Login extends GetWidget<AuthController> {
                       Flexible(
                           child: Column(
                         children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  Get.back();
+                                  controller.isLoading = false;
+                                },
+                                icon: const Image(
+                                  width: 24,
+                                  color: Colors.white,
+                                  image: Svg('assets/images/back_arrow.svg'),
+                                ),
+                              ),
+                            ],
+                          ),
                           const Text(
                             "Welcome back.",
                             style: kHeadline,

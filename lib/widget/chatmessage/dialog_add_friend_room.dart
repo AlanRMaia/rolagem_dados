@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/models/room.dart';
+import 'package:rolagem_dados/models/user.dart';
 import 'package:rolagem_dados/widget/my_search_field.dart';
 import '../my_text_button.dart';
 
@@ -10,7 +11,7 @@ class DialogAddFriendRoom extends StatelessWidget {
   final VoidCallback voidCallback;
   final VoidCallback voidCallbackReload;
   final Map<String, dynamic> data;
-  final RoomModel model;
+  final UserModel model;
   final TextEditingController editingController;
   final ValueChanged<String> onChanged;
   final bool showButton;
@@ -99,7 +100,7 @@ class DialogAddFriendRoom extends StatelessWidget {
                 CircleAvatar(
                   radius: 50,
                   backgroundImage:
-                      NetworkImage(data['image'] as String ?? model.imgUrl),
+                      NetworkImage(data['image'] as String ?? model.image),
                 ),
                 const SizedBox(height: 5),
                 Text(
