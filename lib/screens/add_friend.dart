@@ -33,6 +33,8 @@ class AddFriend extends GetView<AuthController> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
         elevation: 0,
         toolbarHeight: 70,
@@ -63,44 +65,65 @@ class AddFriend extends GetView<AuthController> {
                   child: ListView.builder(
                       itemCount: AddFriendController.to.resultFriends.length,
                       itemBuilder: (context, index) {
-                        return ListTile(
-                              onTap: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return DialogAddFriend(
-                                        data: AddFriendController
-                                            .to.resultFriends[index],
-                                        voidCallback: () {
-                                          _addFriend(AddFriendController
-                                              .to.resultFriends[index]);
-                                          AddFriendController.to.resultFriends
-                                              .clear();
-                                        },
-                                        voidCallbackReload: () {
-                                          _reload();
-                                        },
-                                      );
-                                    });
-                              },
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(
+                        return Container(
+                          margin: const EdgeInsets.only(
+                              top: 5, left: 40, right: 40),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.white),
+                          child: ListTile(
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return DialogAddFriend(
+                                          data: AddFriendController
+                                              .to.resultFriends[index],
+                                          voidCallback: () {
+                                            _addFriend(AddFriendController
+                                                .to.resultFriends[index]);
+                                            AddFriendController.to.resultFriends
+                                                .clear();
+                                          },
+                                          voidCallbackReload: () {
+                                            _friendController.resultFriends
+                                                .clear();
+                                            _reload();
+                                          },
+                                        );
+                                      });
+                                },
+                                leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                      AddFriendController
+                                          .to.resultFriends[index]['image']
+                                          .toString()),
+                                ),
+                                title: Text(
                                     AddFriendController
-                                        .to.resultFriends[index]['image']
-                                        .toString()),
-                              ),
-                              title: Text(
-                                  AddFriendController
-                                      .to.resultFriends[index]['name']
-                                      .toString(),
-                                  style: const TextStyle(color: Colors.white)),
-                              subtitle: Text(
-                                  AddFriendController
-                                      .to.resultFriends[index]['id']
-                                      .toString(),
-                                  style: const TextStyle(color: Colors.white)),
-                            ) ??
-                            const CircularProgressIndicator();
+                                        .to.resultFriends[index]['name']
+                                        .toString(),
+                                    style:
+                                        const TextStyle(color: Colors.black)),
+                                subtitle: Text(
+                                    AddFriendController
+                                        .to.resultFriends[index]['id']
+                                        .toString(),
+                                    style:
+                                        const TextStyle(color: Colors.black)),
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    _friendController.resultFriends.clear();
+                                  },
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                dense: true,
+                              ) ??
+                              const CircularProgressIndicator(),
+                        );
                       }),
                 )
               : Container()),

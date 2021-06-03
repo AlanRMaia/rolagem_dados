@@ -10,6 +10,7 @@ class UserFriendProfile extends StatelessWidget {
     final userFriend = Get.arguments;
     return Scaffold(
       appBar: AppBar(
+        brightness: Brightness.dark,
         backgroundColor: Colors.deepPurple[400],
         toolbarHeight: 200,
         centerTitle: true,

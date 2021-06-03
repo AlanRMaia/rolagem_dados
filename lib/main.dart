@@ -3,9 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rolagem_dados/controllers/bindings/auth_binding.dart';
-import 'package:rolagem_dados/controllers/bindings/bottom_bar_pages_bindings.dart';
 import 'package:rolagem_dados/controllers/bindings/chatScreen_bindings.dart';
-import 'package:rolagem_dados/screens/bottom_bar_pages.dart';
 import 'package:rolagem_dados/screens/chat/chat_screen.dart';
 import 'package:rolagem_dados/screens/login.dart';
 import 'package:rolagem_dados/screens/signup.dart';
@@ -14,8 +12,10 @@ import 'utils/root.dart';
 
 void main() {
   runApp(MyApp());
-  SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(statusBarIconBrightness: Brightness.light));
+  // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+  //   statusBarColor: Colors.black, // cor da barra superior
+  //   statusBarIconBrightness: Brightness.light, // ícones da barra superior
+  // ));
 
   // Firestore.instance.collection('teste').add(
   //   {'teste': 'teste'},
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: kBackgroundColor,
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
-          iconTheme: const IconThemeData(color: Colors.black87)),
+          iconTheme: const IconThemeData(color: Colors.black)),
       home: Root(),
     );
   }

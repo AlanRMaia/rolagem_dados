@@ -12,8 +12,9 @@ import '../my_text_field.dart';
 class DialogTextEditDelete extends GetView<TextComposerController> {
   final TextEditingController textController;
   final Map<String, dynamic> data;
+  final bool mine;
 
-  const DialogTextEditDelete(
+  const DialogTextEditDelete(this.mine,
       {Key key, @required this.textController, @required this.data})
       : super(key: key);
 
@@ -97,26 +98,37 @@ class DialogTextEditDelete extends GetView<TextComposerController> {
                 );
               });
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              data['text'] as String,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (mine)
+                Text(
+                  data['senderName'].toString(),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold),
+                ),
+              Text(
+                data['text'] as String,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                ),
               ),
-            ),
-            Text(
-              DateFormat('Hm', 'en_US').format(
-                _ago(data['time'] as Timestamp),
+              Text(
+                DateFormat('Hm', 'en_US').format(
+                  _ago(data['time'] as Timestamp),
+                ),
+                style: TextStyle(
+                  color: Colors.grey.shade400,
+                  fontSize: 8,
+                ),
               ),
-              style: TextStyle(
-                color: Colors.grey.shade400,
-                fontSize: 8,
-              ),
-            ),
-          ],
+            ],
+          ),
         ));
   }
 }

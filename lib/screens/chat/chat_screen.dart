@@ -6,12 +6,9 @@ import 'package:rolagem_dados/controllers/chat_screen_controller.dart';
 import 'package:rolagem_dados/controllers/text_composer_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
-import 'package:rolagem_dados/models/user.dart';
 import 'package:rolagem_dados/screens/chat/chat_message.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/widget/addfriend/dialog_add_friend.dart';
-import 'package:rolagem_dados/widget/chatmessage/dialog_add_friend_room.dart';
-import 'package:rolagem_dados/widget/chatmessage/dialog_text_edit_delete.dart';
 import 'package:rolagem_dados/widget/my_search_field.dart';
 import 'text_composer.dart';
 
@@ -54,7 +51,9 @@ class ChatScreen extends GetView<ChatScreenController> {
                   controller.showSearch = !controller.showSearch;
                 }))
           ],
-          backgroundColor: Colors.black87,
+          toolbarHeight: 80,
+          brightness: Brightness.dark,
+          backgroundColor: Colors.transparent,
           title: Obx(() => controller.showSearch != true
               ? Text(_room.name)
               : MySearchField(
@@ -64,7 +63,6 @@ class ChatScreen extends GetView<ChatScreenController> {
                   },
                   onSubmited: (text) {
                     controller.loadFriends(text);
-                    print(text);
                   },
                   showButton: controller.isEmpty,
                   voidCallback: _seachFriend,
@@ -77,40 +75,62 @@ class ChatScreen extends GetView<ChatScreenController> {
           children: [
             Obx(() => controller.userFriend.isNotEmpty
                 ? SizedBox(
-                    height: 100,
+                    height: 69,
                     child: ListView.builder(
                         itemCount: controller.userFriend.length,
                         itemBuilder: (context, index) {
-                          return ListTile(
-                                onTap: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return DialogAddFriend(
-                                          user: controller.userFriend[index],
-                                          voidCallback: () {
-                                            controller.addFriendRoom(
-                                                controller.userFriend[index].id,
-                                                _room.id);
-                                          },
-                                          voidCallbackReload: () {},
-                                        );
-                                      });
-                                },
-                                leading: CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                  controller.userFriend[index].image,
-                                )),
-                                title: Text(
-                                  controller.userFriend[index].name,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                                subtitle: Text(
-                                  controller.userFriend[index].id,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ) ??
-                              const CircularProgressIndicator();
+                          return Container(
+                            margin: const EdgeInsets.only(
+                                top: 5, left: 40, right: 40),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: Colors.white),
+                            child: ListTile(
+                                  onTap: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return DialogAddFriend(
+                                            user: controller.userFriend[index],
+                                            voidCallback: () {
+                                              controller.addFriendRoom(
+                                                  controller
+                                                      .userFriend[index].id,
+                                                  _room.id);
+                                            },
+                                            voidCallbackReload: () {
+                                              controller.userFriend.clear();
+                                              controller.showSearch = false;
+                                            },
+                                          );
+                                        });
+                                  },
+                                  leading: CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                    controller.userFriend[index].image,
+                                  )),
+                                  title: Text(
+                                    controller.userFriend[index].name,
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                  subtitle: Text(
+                                    controller.userFriend[index].id,
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                  trailing: IconButton(
+                                    onPressed: () {
+                                      controller.userFriend.clear();
+                                    },
+                                    icon: const Icon(
+                                      Icons.close,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  autofocus: true,
+                                  dense: true,
+                                ) ??
+                                const CircularProgressIndicator(),
+                          );
                         }),
                   )
                 : Container()),

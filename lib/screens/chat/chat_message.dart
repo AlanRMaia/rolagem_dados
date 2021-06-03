@@ -34,20 +34,27 @@ class ChatMessage extends GetView<TextComposerController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!mine)
-            Container(
-              margin: const EdgeInsets.only(right: 16),
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(
-                  data['senderPhotoUrl'] as String ??
-                      "https://firebasestorage.googleapis.com/v0/b/geradordedados-rpg.appspot.com/o/Avatar%2Fuser-icon-vector.jpg?alt=media&token=11126173-cd17-4a38-9b2f-61ab085d39dd",
+            Column(
+              children: [
+                const SizedBox(
+                  height: 28,
                 ),
-              ),
+                Container(
+                  margin: const EdgeInsets.only(right: 3),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                        data['senderPhotoUrl'] as String ??
+                            "https://firebasestorage.googleapis.com/v0/b/geradordedados-rpg.appspot.com/o/Avatar%2Fuser-icon-vector.jpg?alt=media&token=11126173-cd17-4a38-9b2f-61ab085d39dd",
+                        scale: 1),
+                  ),
+                ),
+              ],
             ),
           Flexible(
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(0),
+                  padding: const EdgeInsets.all(2),
                   child: Column(
                     crossAxisAlignment: mine
                         ? CrossAxisAlignment.end
@@ -58,21 +65,22 @@ class ChatMessage extends GetView<TextComposerController> {
                               horizontal: 3, vertical: 1),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(4),
+                              topLeft: const Radius.circular(16),
                               bottomRight: mine
                                   ? const Radius.circular(0)
-                                  : const Radius.circular(4),
-                              topRight: const Radius.circular(4),
+                                  : const Radius.circular(16),
+                              topRight: const Radius.circular(16),
                               bottomLeft: mine
-                                  ? const Radius.circular(4)
+                                  ? const Radius.circular(16)
                                   : const Radius.circular(0),
                             ),
                             color: mine ? Colors.cyan[900] : Colors.blueGrey,
                           ),
-                          padding: const EdgeInsets.all(4.5),
+                          padding: const EdgeInsets.all(5),
                           child: data['imgUrl'] != null
                               ? DialogImageDelete(data: data)
                               : DialogTextEditDelete(
+                                  !mine,
                                   textController: _textController,
                                   data: data,
                                 )),

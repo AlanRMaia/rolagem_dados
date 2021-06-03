@@ -16,19 +16,23 @@ class SignUp extends GetWidget<AuthController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: Colors.transparent,
-      //   backwardsCompatibility: true,
-      //   elevation: 0,
-      //   leading: IconButton(
-      //     onPressed: () => Get.back(),
-      //     icon: const Image(
-      //       width: 24,
-      //       color: Colors.white,
-      //       image: Svg('assets/images/back_arrow.svg'),
-      //     ),
-      //   ),
-      // ),
+      appBar: AppBar(
+        brightness: Brightness.dark,
+        backgroundColor: Colors.transparent,
+        backwardsCompatibility: true,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Get.back();
+            controller.isLoading = false;
+          },
+          icon: const Image(
+            width: 24,
+            color: Colors.white,
+            image: Svg('assets/images/back_arrow.svg'),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: GestureDetector(
           onTap: () => Get.focusScope.unfocus(),
@@ -46,17 +50,6 @@ class SignUp extends GetWidget<AuthController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            IconButton(
-                              onPressed: () {
-                                Get.back();
-                                controller.isLoading = false;
-                              },
-                              icon: const Image(
-                                width: 24,
-                                color: Colors.white,
-                                image: Svg('assets/images/back_arrow.svg'),
-                              ),
-                            ),
                             const Text(
                               "Register",
                               style: kHeadline,

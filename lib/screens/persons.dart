@@ -5,6 +5,8 @@ class Persons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        brightness: Brightness.dark,
+        automaticallyImplyLeading: false,
         title: Text('Personagens'),
       ),
       body: Container(),
