@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/models/user.dart';
-import 'package:uuid/uuid.dart';
 
 class Database extends GetxController {
   final Firestore _firestore = Firestore.instance;
@@ -101,6 +100,23 @@ class Database extends GetxController {
           .child('Image Rooms')
           .child(UserController.to.user.id +
               DateTime.now().millisecondsSinceEpoch.toString())
+          .putFile(imgFile);
+
+      final StorageTaskSnapshot taskSnapshot = await task.onComplete;
+      final String url = await taskSnapshot.ref.getDownloadURL() as String;
+      return imgUrl = url;
+    } catch (e) {
+      print('Erro de imagem: /$e');
+      rethrow;
+    }
+  }
+
+  Future<String> imageUser(File imgFile) async {
+    try {
+      final StorageUploadTask task = FirebaseStorage.instance
+          .ref()
+          .child('Image Users')
+          .child(DateTime.now().millisecondsSinceEpoch.toString())
           .putFile(imgFile);
 
       final StorageTaskSnapshot taskSnapshot = await task.onComplete;

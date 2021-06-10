@@ -69,6 +69,7 @@ class DialogRoomCreate extends StatelessWidget {
                           onTap: () {
                             Get.back();
                             controller.resetImage();
+                            textController.clear();
                           },
                           bgColor: Colors.transparent,
                           buttonName: 'Cancelar',
@@ -80,7 +81,8 @@ class DialogRoomCreate extends StatelessWidget {
                               isLoading: controllerAuth.isLoading,
                               onTap: () async {
                                 controller.createRoom(textController.text);
-
+                                controller.resetImage();
+                                textController.clear();
                                 Get.back();
                               },
                               buttonName: 'Criar',

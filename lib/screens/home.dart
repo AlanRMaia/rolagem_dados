@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/home_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
+import 'package:rolagem_dados/main.dart';
+import 'package:rolagem_dados/screens/presentation.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/widget/home/dialog_room_create.dart';
 
@@ -17,7 +19,10 @@ class Home extends GetWidget<AuthController> {
         brightness: Brightness.dark,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_outlined),
-          onPressed: () => controller.signOut(),
+          onPressed: () {
+            controller.signOut();
+            Get.offAll(Presentation());
+          },
           tooltip: 'Sair do aplicativo',
         ),
         title: GetX<UserController>(
@@ -28,7 +33,15 @@ class Home extends GetWidget<AuthController> {
           },
           builder: (_) {
             if (_.user.name != null) {
-              return Text('Seja bem vindo ${_.user.name}');
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(_.user.image),
+                ),
+                title: Text(
+                  _.user.name,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              );
             } else {
               return const CircularProgressIndicator();
             }

@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/user.dart';
 import 'package:rolagem_dados/services/data_base.dart';
-import 'package:rolagem_dados/utils/root.dart';
 
 class AuthController extends GetxController {
   static AuthController get to => Get.find();
@@ -11,6 +13,17 @@ class AuthController extends GetxController {
   final Rx<FirebaseUser> _firebaseUser = Rx<FirebaseUser>();
   final _isPassWordVisible = false.obs;
   final _isLoading = false.obs;
+  File _imgFile;
+  final RxString _imgUrl = ''.obs;
+  final picker = ImagePicker();
+
+  File get imgFile => _imgFile;
+  set imgFile(File value) => _imgFile = value;
+
+  String get imgUrl => _imgUrl.value;
+  set imgUrl(String value) {
+    _imgUrl.value = value;
+  }
 
   bool get isPassWordVisible => _isPassWordVisible.value;
 
@@ -30,8 +43,8 @@ class AuthController extends GetxController {
     _firebaseUser.bindStream(_auth.onAuthStateChanged);
   }
 
-  Future<void> createUser(
-      String name, String email, String password, String phone) async {
+  Future<void> createUser(String name, String email, String password,
+      String phone, String imgUrl) async {
     isLoading = true;
     try {
       final AuthResult _authResult = await _auth.createUserWithEmailAndPassword(
@@ -40,11 +53,17 @@ class AuthController extends GetxController {
       //Get.back();//fecha a página atual e volta a anterior
 
       //create a user in firestore
+      imgUrl = await Database().imageUser(_imgFile);
+
+      print('Erro image $imgUrl');
+
       final UserModel _user = UserModel(
         id: _authResult.user.uid,
         name: name,
         email: email,
         phone: phone,
+        image: imgUrl ??
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7yd3gzdOtAsNDbQNhSJz2uQ49puvNchNxvQ&usqp=CAU',
       );
 
       if (await Database().createNewUser(_user)) {
@@ -97,5 +116,17 @@ class AuthController extends GetxController {
       );
       isLoading = false;
     }
+  }
+
+  Future<void> showImage() async {
+    final pickerfile = await picker.getImage(source: ImageSource.camera);
+    _imgFile = File(pickerfile.path);
+    if (pickerfile != null) {
+      imgUrl = pickerfile.path;
+    }
+  }
+
+  void resetImage() {
+    _imgUrl.value = '';
   }
 }

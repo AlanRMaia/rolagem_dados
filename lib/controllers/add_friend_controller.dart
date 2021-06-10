@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
-import 'package:rolagem_dados/models/user.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 
 class AddFriendController extends GetxController
@@ -56,7 +54,4 @@ class AddFriendController extends GetxController
       rethrow;
     }
   }
-
-  
-
 }

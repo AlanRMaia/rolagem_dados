@@ -10,8 +10,12 @@ class TextComposerController extends GetxController {
   final Database _database;
   final _isComposing = false.obs;
   final _isLoading = false.obs;
+  final _imgDados = 'assets/images/noun_D20_2453700.png'.obs;
 
   TextComposerController(this._database);
+
+  set imgDados(String value) => _imgDados.value = value;
+  String get imgDados => _imgDados.value;
 
   set isComposing(bool value) => _isComposing.value = value;
   bool get isComposing => _isComposing.value;
@@ -47,4 +51,13 @@ class TextComposerController extends GetxController {
   Future<void> deleteSubmited(String idMessage, String idRoom) async {
     await _database.deleteSubmited(idMessage, idRoom);
   }
+
+  final List<String> dados = [
+    'assets/images/noun_d4_2453696.png',
+    'assets/images/noun_d6_2453695.png',
+    'assets/images/noun_d8_2453699.png',
+    'assets/images/noun_d10_2453698.png',
+    'assets/images/noun_d12_2453697.png',
+    'assets/images/noun_D20_2453700.png'
+  ];
 }

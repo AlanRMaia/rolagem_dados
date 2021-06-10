@@ -6,6 +6,7 @@ import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/widget/my_password_field.dart';
 import 'package:rolagem_dados/widget/my_text_button.dart';
 import 'package:rolagem_dados/widget/my_text_field.dart';
+import 'package:rolagem_dados/widget/signup/image_preview.dart';
 
 class SignUp extends GetWidget<AuthController> {
   final TextEditingController nameController = TextEditingController();
@@ -25,6 +26,7 @@ class SignUp extends GetWidget<AuthController> {
           onPressed: () {
             Get.back();
             controller.isLoading = false;
+            controller.imgUrl = '';
           },
           icon: const Image(
             width: 24,
@@ -46,18 +48,23 @@ class SignUp extends GetWidget<AuthController> {
                   ),
                   child: Column(
                     children: [
+                      Obx(() => ImagePreview(
+                            callbackShowImage: controller.showImage,
+                            imgUrl: controller.imgUrl,
+                          )),
                       Flexible(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              "Register",
-                              style: kHeadline,
-                            ),
-                            const Text(
-                              "Create new account to get started.",
-                              style: kBodyText2,
-                            ),
+                            // const Text(
+                            //   "Register",
+                            //   style: kHeadline,
+                            // ),
+                            // const Text(
+                            //   "Create new account to get started.",
+                            //   style: kBodyText2,
+                            // ),
+
                             const SizedBox(
                               height: 20,
                             ),
@@ -120,10 +127,12 @@ class SignUp extends GetWidget<AuthController> {
                           isLoading: controller.isLoading,
                           onTap: () {
                             controller.createUser(
-                                nameController.text,
-                                emailController.text,
-                                passwordController.text,
-                                phoneController.text);
+                              nameController.text,
+                              emailController.text,
+                              passwordController.text,
+                              phoneController.text,
+                              controller.imgUrl,
+                            );
                           },
                           bgColor: Colors.white,
                           textColor: Colors.black87,
