@@ -43,6 +43,15 @@ dependencies:
   molten_navigationbar_flutter: ^0.0.1
   flutter_icons: ^1.1.0
   getwidget: ^2.0.2
+  dio:
+  path: ^1.7.0  
+  path_provider:
+  progress_dialog:
+  flutter_downloader: ^1.4.4
+  permission_handler: ^5.0.1
+  file_picker: 
+  flutter_pdfview:
+  permission_handler_platform_interface: ^2.0.1
   
 
 dev_dependencies:

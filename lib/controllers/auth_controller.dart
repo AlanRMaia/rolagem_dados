@@ -9,6 +9,7 @@ import 'package:rolagem_dados/services/data_base.dart';
 
 class AuthController extends GetxController {
   static AuthController get to => Get.find();
+  final Database _database = Get.put(Database());
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Rx<FirebaseUser> _firebaseUser = Rx<FirebaseUser>();
   final _isPassWordVisible = false.obs;
@@ -53,9 +54,9 @@ class AuthController extends GetxController {
       //Get.back();//fecha a página atual e volta a anterior
 
       //create a user in firestore
-      imgUrl = await Database().imageUser(_imgFile);
 
-      print('Erro image $imgUrl');
+      // ignore: parameter_assignments
+      imgUrl = await _database.imageUser(_imgFile);
 
       final UserModel _user = UserModel(
         id: _authResult.user.uid,
@@ -66,11 +67,12 @@ class AuthController extends GetxController {
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7yd3gzdOtAsNDbQNhSJz2uQ49puvNchNxvQ&usqp=CAU',
       );
 
-      if (await Database().createNewUser(_user)) {
+      if (await _database.createNewUser(_user)) {
         //user created succesfully
         Get.find<UserController>().user = _user;
         isLoading = false;
-        Get.back();
+        this.imgUrl = '';
+        Get.offAll(Get.toNamed('/'));
       }
     } catch (e) {
       Get.snackbar(
@@ -97,7 +99,7 @@ class AuthController extends GetxController {
     } catch (e) {
       Get.snackbar(
         'Error ao efetuar o login',
-        e.message as String,
+        e.message.toString(),
         snackPosition: SnackPosition.BOTTOM,
       );
       isLoading = false;
@@ -120,7 +122,15 @@ class AuthController extends GetxController {
 
   Future<void> showImage() async {
     final pickerfile = await picker.getImage(source: ImageSource.camera);
-    _imgFile = File(pickerfile.path);
+    _imgFile = File(pickerfile?.path);
+    if (pickerfile != null) {
+      imgUrl = pickerfile.path;
+    }
+  }
+
+  Future<void> showImageGallery() async {
+    final pickerfile = await picker.getImage(source: ImageSource.gallery);
+    _imgFile = File(pickerfile?.path);
     if (pickerfile != null) {
       imgUrl = pickerfile.path;
     }

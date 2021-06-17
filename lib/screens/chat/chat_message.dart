@@ -1,14 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:rolagem_dados/controllers/text_composer_controller.dart';
-import 'package:rolagem_dados/utils/popmenu/icon_menu.dart';
-import 'package:rolagem_dados/utils/popmenu/text_menu.dart';
 import 'package:rolagem_dados/widget/chatmessage/dialog_image_delete.dart';
 import 'package:rolagem_dados/widget/chatmessage/dialog_text_edit_delete.dart';
-import 'package:rolagem_dados/widget/my_text_field.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 class ChatMessage extends GetView<TextComposerController> {
   final Map<String, dynamic> data;
@@ -20,9 +15,9 @@ class ChatMessage extends GetView<TextComposerController> {
   Widget build(BuildContext context) {
     final TextEditingController _textController = TextEditingController();
 
-    void _reset() {
-      _textController.clear();
-    }
+    // void _reset() {
+    //   _textController.clear();
+    // }
 
     DateTime _ago(Timestamp t) {
       return t.toDate();
@@ -77,8 +72,8 @@ class ChatMessage extends GetView<TextComposerController> {
                             color: mine ? Colors.cyan[900] : Colors.blueGrey,
                           ),
                           padding: const EdgeInsets.all(5),
-                          child: data['imgUrl'] != null
-                              ? DialogImageDelete(data: data)
+                          child: data['fileUrl'] != null
+                              ? DialogImageDelete(mine, data: data)
                               : DialogTextEditDelete(
                                   !mine,
                                   textController: _textController,

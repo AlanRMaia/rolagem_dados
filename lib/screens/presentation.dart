@@ -16,7 +16,7 @@ class Presentation extends StatelessWidget {
                 children: [
                   Expanded(
                     child: MyTextButton(
-                        buttonName: 'Registro',
+                        buttonName: 'Registrar',
                         onTap: () {
                           Get.toNamed('/signup');
                         },
@@ -25,7 +25,7 @@ class Presentation extends StatelessWidget {
                   ),
                   Expanded(
                     child: MyTextButton(
-                        buttonName: 'Sign In',
+                        buttonName: 'Acessar',
                         onTap: () {
                           Get.toNamed('/login');
                         },

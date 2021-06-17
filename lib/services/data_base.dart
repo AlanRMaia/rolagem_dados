@@ -1,31 +1,26 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
+import 'package:rolagem_dados/models/firebase_file.dart';
 import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/models/user.dart';
 
 class Database extends GetxController {
   final Firestore _firestore = Firestore.instance;
 
-  // static Database get to => Get.find();
+  static Database get to => Get.find();
 
-  // bool _isLoading = false;
+  // final _imgUrl = ''.obs;
 
-  // bool get isLoading => _isLoading;
-
-  // void set isLoading(bool data) {
-  //   _isLoading = data;
+  // String get imgUrl => _imgUrl.value;
+  // set imgUrl(String value) {
+  //   _imgUrl.value = value;
   // }
-  //
-  final _imgUrl = ''.obs;
-
-  String get imgUrl => _imgUrl.value;
-  set imgUrl(String value) {
-    _imgUrl.value = value;
-  }
 
   final _messages = <Map<String, dynamic>>[].obs;
 
@@ -36,8 +31,6 @@ class Database extends GetxController {
   List<RoomModel> get rooms =>
       _rooms.map((value) => RoomModel.fromMap(value)).toList();
 
-  //final _messages = <Map<String, dynamic>>[].obs;
-
   Future<bool> createNewUser(UserModel user) async {
     try {
       await _firestore
@@ -46,7 +39,6 @@ class Database extends GetxController {
           .setData(user.toMap());
       return true;
     } catch (e) {
-      print(e);
       return false;
     }
   }
@@ -58,7 +50,6 @@ class Database extends GetxController {
 
       return UserModel.fromDocumentSnapsho(doc);
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -77,10 +68,22 @@ class Database extends GetxController {
     });
   }
 
-  void handleSubmitted(
-      {String text, File imgFile, RoomModel room, String url, UserModel user}) {
+  void handleSubmitted({
+    String text,
+    File imgFile,
+    RoomModel room,
+    FirebaseFile file,
+    UserModel user,
+    String type,
+  }) {
     _sendMessage(
-        text: text, user: user, imgFile: imgFile, room: room, url: url);
+      text: text,
+      user: user,
+      imgFile: imgFile,
+      room: room,
+      file: file,
+      type: type,
+    );
   }
 
   void roomCreateSubmitted({String name, File imgFile}) {
@@ -97,16 +100,14 @@ class Database extends GetxController {
     try {
       final StorageUploadTask task = FirebaseStorage.instance
           .ref()
-          .child('Image Rooms')
-          .child(UserController.to.user.id +
-              DateTime.now().millisecondsSinceEpoch.toString())
+          .child('imageRooms')
+          .child(basename(imgFile.path))
           .putFile(imgFile);
 
       final StorageTaskSnapshot taskSnapshot = await task.onComplete;
       final String url = await taskSnapshot.ref.getDownloadURL() as String;
-      return imgUrl = url;
+      return url;
     } catch (e) {
-      print('Erro de imagem: /$e');
       rethrow;
     }
   }
@@ -115,15 +116,14 @@ class Database extends GetxController {
     try {
       final StorageUploadTask task = FirebaseStorage.instance
           .ref()
-          .child('Image Users')
-          .child(DateTime.now().millisecondsSinceEpoch.toString())
+          .child('imageUsers')
+          .child(basename(imgFile.path))
           .putFile(imgFile);
 
       final StorageTaskSnapshot taskSnapshot = await task.onComplete;
       final String url = await taskSnapshot.ref.getDownloadURL() as String;
-      return imgUrl = url;
+      return url;
     } catch (e) {
-      print('Erro de imagem: /$e');
       rethrow;
     }
   }
@@ -149,7 +149,6 @@ class Database extends GetxController {
           .collection('rooms')
           .add({'id': id});
     } catch (e) {
-      print('Erro ao criar uma sala $e');
       rethrow;
     }
   }
@@ -196,15 +195,26 @@ class Database extends GetxController {
     }
   }
 
-  StorageUploadTask storageUpload(File imgFile) {
+  StorageUploadTask storageUpload(File file) {
     try {
       return FirebaseStorage.instance
           .ref()
-          .child(UserController.to.user.id +
-              DateTime.now().millisecondsSinceEpoch.toString())
-          .putFile(imgFile);
+          .child('/filesMessages')
+          .child(basename(file.path))
+          .putFile(file);
     } catch (e) {
-      print(e);
+      rethrow;
+    }
+  }
+
+  StorageUploadTask storageUploadBytes(File file, Uint8List data) {
+    try {
+      return FirebaseStorage.instance
+          .ref()
+          .child('/filesMessages')
+          .child(basename(file.path))
+          .putData(data);
+    } catch (e) {
       rethrow;
     }
   }
@@ -214,17 +224,18 @@ class Database extends GetxController {
       final StorageTaskSnapshot taskSnapshot = await task.onComplete;
       return await taskSnapshot.ref.getDownloadURL() as String;
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
 
-  Future<void> _sendMessage(
-      {String text,
-      File imgFile,
-      UserModel user,
-      RoomModel room,
-      String url}) async {
+  Future<void> _sendMessage({
+    String text,
+    File imgFile,
+    UserModel user,
+    RoomModel room,
+    FirebaseFile file,
+    String type,
+  }) async {
     try {
       if (imgFile != null) {
         final message = await _firestore
@@ -232,13 +243,16 @@ class Database extends GetxController {
             .document(room.id)
             .collection('messages')
             .add({
-          'imgUrl': url,
+          'fileUrl': file.url,
+          'fileName': file.name,
+          'fileBytes': file.byteTotal,
           'text': text,
           'senderName': user.name,
           'senderPhotoUrl': user.image,
           'uid': user.id,
           'idRoom': room.id,
-          'time': Timestamp.now()
+          'time': Timestamp.now(),
+          'type': type,
         });
 
         final id = message.documentID;
@@ -256,7 +270,7 @@ class Database extends GetxController {
             .collection('messages')
             .add({
           'text': text,
-          'imgUrl': imgFile,
+          'fileUrl': imgFile,
           'senderName': user.name,
           'senderPhotoUrl': user.image,
           'uid': user.id,
@@ -274,7 +288,6 @@ class Database extends GetxController {
             .updateData({'id': id});
       }
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -296,7 +309,6 @@ class Database extends GetxController {
           .document(idMessage)
           .updateData({'text': message});
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -316,7 +328,6 @@ class Database extends GetxController {
           .document(idMessage)
           .delete();
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -344,7 +355,6 @@ class Database extends GetxController {
         return userFriends.documents.map((e) => e.data).toList();
       }
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -364,7 +374,6 @@ class Database extends GetxController {
           .collection('friends')
           .add(friendUser);
     } catch (e) {
-      print(e.toString());
       rethrow;
     }
   }
@@ -384,7 +393,6 @@ class Database extends GetxController {
 
       return allFriends;
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -406,7 +414,6 @@ class Database extends GetxController {
       }
       return allFriends;
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -419,7 +426,6 @@ class Database extends GetxController {
           .collection('rooms')
           .add({'id': roomId});
     } catch (e) {
-      print(e);
       rethrow;
     }
   }

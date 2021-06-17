@@ -47,14 +47,14 @@ class Login extends GetWidget<AuthController> {
                           child: Column(
                         children: [
                           const Text(
-                            "Welcome back.",
+                            "Seja bem vindo",
                             style: kHeadline,
                           ),
                           const SizedBox(
                             height: 10,
                           ),
                           const Text(
-                            "You've been missed!",
+                            "Estávamos à sua espera",
                             style: kBodyText2,
                           ),
                           const SizedBox(
@@ -80,7 +80,7 @@ class Login extends GetWidget<AuthController> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
-                            "Dont't have an account? ",
+                            "Não possui uma conta? ",
                             style: kBodyText,
                           ),
                           GestureDetector(
@@ -88,7 +88,7 @@ class Login extends GetWidget<AuthController> {
                               Get.toNamed('/signup');
                             },
                             child: Text(
-                              'Register',
+                              'Registrar',
                               style: kBodyText.copyWith(
                                 color: Colors.white,
                               ),
@@ -100,7 +100,7 @@ class Login extends GetWidget<AuthController> {
                       Obx(
                         () => MyTextButton(
                           isLoading: controller.isLoading,
-                          buttonName: 'Log in',
+                          buttonName: 'Entrar',
                           onTap: () {
                             controller.login(
                                 emailController.text, passwordController.text);

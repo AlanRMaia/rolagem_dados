@@ -52,25 +52,33 @@ class SignUp extends GetWidget<AuthController> {
                             callbackShowImage: controller.showImage,
                             imgUrl: controller.imgUrl,
                           )),
+                      OutlinedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          side: const BorderSide(color: Colors.grey),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
+                          ),
+                        ),
+                        icon: const Icon(
+                          Icons.attach_file,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          'Galeria',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        onPressed: () => controller.showImageGallery(),
+                      ),
                       Flexible(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // const Text(
-                            //   "Register",
-                            //   style: kHeadline,
-                            // ),
-                            // const Text(
-                            //   "Create new account to get started.",
-                            //   style: kBodyText2,
-                            // ),
-
                             const SizedBox(
                               height: 20,
                             ),
                             MyTextField(
                               controller: nameController,
-                              hintText: 'Name',
+                              hintText: 'Nome',
                               inputType: TextInputType.name,
                             ),
                             MyTextField(
@@ -80,7 +88,7 @@ class SignUp extends GetWidget<AuthController> {
                             ),
                             MyTextField(
                               controller: phoneController,
-                              hintText: 'Phone',
+                              hintText: 'Telefone',
                               inputType: TextInputType.phone,
                             ),
                             Expanded(
@@ -106,13 +114,13 @@ class SignUp extends GetWidget<AuthController> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              "Already have an account? ",
+                              "Já tem uma conta? ",
                               style: kBodyText,
                             ),
                             GestureDetector(
                               onTap: () => Get.toNamed('/login'),
                               child: Text(
-                                "Sign In",
+                                "Entrar",
                                 style: kBodyText.copyWith(
                                   color: Colors.white,
                                 ),
@@ -123,7 +131,7 @@ class SignUp extends GetWidget<AuthController> {
                       ),
                       Obx(
                         () => MyTextButton(
-                          buttonName: 'Register',
+                          buttonName: 'Cadastrar',
                           isLoading: controller.isLoading,
                           onTap: () {
                             controller.createUser(

@@ -56,12 +56,28 @@ class AddFriend extends GetView<AuthController> {
           ),
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
         children: [
+          Flexible(
+            child: AddFriendController.to.obx((state) => ListView.builder(
+                itemCount: state.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage:
+                          NetworkImage(state[index]['image'].toString()),
+                    ),
+                    title: Text(
+                      state[index]['name'].toString(),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(state[index]['id'].toString(),
+                        style: const TextStyle(color: Colors.white)),
+                  );
+                })),
+          ),
           Obx(() => AddFriendController.to.resultFriends.isNotEmpty
               ? SizedBox(
-                  height: 100,
                   child: ListView.builder(
                       itemCount: AddFriendController.to.resultFriends.length,
                       itemBuilder: (context, index) {
@@ -127,24 +143,6 @@ class AddFriend extends GetView<AuthController> {
                       }),
                 )
               : Container()),
-          Flexible(
-            child: AddFriendController.to.obx((state) => ListView.builder(
-                itemCount: state.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage:
-                          NetworkImage(state[index]['image'].toString()),
-                    ),
-                    title: Text(
-                      state[index]['name'].toString(),
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    subtitle: Text(state[index]['id'].toString(),
-                        style: const TextStyle(color: Colors.white)),
-                  );
-                })),
-          )
         ],
       ),
     );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rolagem_dados/controllers/bindings/auth_binding.dart';
@@ -7,10 +7,15 @@ import 'package:rolagem_dados/controllers/bindings/chatScreen_bindings.dart';
 import 'package:rolagem_dados/screens/chat/chat_screen.dart';
 import 'package:rolagem_dados/screens/login.dart';
 import 'package:rolagem_dados/screens/signup.dart';
+
 import 'constants.dart';
 import 'utils/root.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize(
+      debug: true // optional: set false to disable printing logs to console
+      );
   runApp(MyApp());
   // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
   //   statusBarColor: Colors.black, // cor da barra superior
@@ -38,10 +43,12 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: '/signup',
           page: () => SignUp(),
+          binding: AuthBinding(),
         ),
         GetPage(
           name: '/login',
           page: () => Login(),
+          binding: AuthBinding(),
         ),
       ],
       theme: ThemeData(

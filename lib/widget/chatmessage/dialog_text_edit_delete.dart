@@ -29,75 +29,80 @@ class DialogTextEditDelete extends GetView<TextComposerController> {
     }
 
     return GestureDetector(
-        onLongPress: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return Column(
-                  children: [
-                    Dialog(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: SizedBox(
-                          height: 150,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              MyTextField(
-                                controller: textController,
-                                hintText: data['text'] as String,
-                                inputType: TextInputType.text,
+        onLongPress: mine
+            ? () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Column(
+                        children: [
+                          Dialog(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: SizedBox(
+                                height: 150,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    MyTextField(
+                                      controller: textController,
+                                      hintText: data['text'] as String,
+                                      inputType: TextInputType.text,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        OutlinedButton.icon(
+                                          onPressed: () {
+                                            controller.editSubmitted(
+                                                data['id'] as String,
+                                                textController.text,
+                                                data['idRoom'] as String);
+                                            _reset();
+                                            Get.back();
+                                          },
+                                          icon: const Icon(
+                                            Icons.edit_outlined,
+                                            color: Colors.black87,
+                                          ),
+                                          label: const Text(
+                                            'Editar',
+                                            style: TextStyle(
+                                                color: Colors.black87),
+                                          ),
+                                        ),
+                                        OutlinedButton.icon(
+                                          onPressed: () {
+                                            controller.deleteSubmited(
+                                                data['id'] as String,
+                                                data['idRoom'] as String);
+                                            _reset();
+                                            Get.back();
+                                          },
+                                          icon: Icon(
+                                            Icons.delete_forever,
+                                            color: Colors.red[900],
+                                          ),
+                                          label: const Text(
+                                            'Excluir',
+                                            style: TextStyle(
+                                                color: Colors.black87),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  OutlinedButton.icon(
-                                    onPressed: () {
-                                      controller.editSubmitted(
-                                          data['id'] as String,
-                                          textController.text,
-                                          data['idRoom'] as String);
-                                      _reset();
-                                      Get.back();
-                                    },
-                                    icon: const Icon(
-                                      Icons.edit_outlined,
-                                      color: Colors.black87,
-                                    ),
-                                    label: const Text(
-                                      'Editar',
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                  ),
-                                  OutlinedButton.icon(
-                                    onPressed: () {
-                                      controller.deleteSubmited(
-                                          data['id'] as String,
-                                          data['idRoom'] as String);
-                                      _reset();
-                                      Get.back();
-                                    },
-                                    icon: Icon(
-                                      Icons.delete_forever,
-                                      color: Colors.red[900],
-                                    ),
-                                    label: const Text(
-                                      'Excluir',
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              });
-        },
+                        ],
+                      );
+                    });
+              }
+            : null,
         child: Padding(
           padding: const EdgeInsets.all(2),
           child: Column(
@@ -106,14 +111,14 @@ class DialogTextEditDelete extends GetView<TextComposerController> {
               if (mine)
                 Text(
                   data['senderName'].toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: Colors.white,
                       fontSize: 8,
                       fontWeight: FontWeight.bold),
                 ),
               Text(
                 data['text'] as String,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 10,
                 ),
