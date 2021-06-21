@@ -41,6 +41,7 @@ class TextComposer extends StatelessWidget {
           Container(
             width: 40,
             child: IconButton(
+              color: Get.isDarkMode ? Colors.black87 : Colors.white,
               icon: const Icon(Icons.photo_camera),
               onPressed: () async {
                 final picker = ImagePicker();
@@ -56,8 +57,9 @@ class TextComposer extends StatelessWidget {
           Container(
             child: PopupMenuButton(
               tooltip: 'Selecione o arquivo',
-              icon: const Icon(
+              icon: Icon(
                 Icons.attach_file_rounded,
+                color: Get.isDarkMode ? Colors.black87 : Colors.white,
                 size: 24,
               ),
               iconSize: 30,

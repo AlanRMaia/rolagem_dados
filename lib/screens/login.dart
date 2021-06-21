@@ -106,15 +106,16 @@ class Login extends GetWidget<AuthController> {
                       const SizedBox(height: 10),
                       Obx(
                         () => MyTextButton(
-                          isLoading: controller.isLoading,
-                          buttonName: 'Entrar',
-                          onTap: () {
-                            controller.login(
-                                emailController.text, passwordController.text);
-                          },
-                          bgColor: Get.isDarkMode ? Colors.white : Colors.black,
-                          textColor: Colors.white,
-                        ),
+                            isLoading: controller.isLoading,
+                            buttonName: 'Entrar',
+                            onTap: () {
+                              controller.login(emailController.text,
+                                  passwordController.text);
+                            },
+                            bgColor:
+                                Get.isDarkMode ? Colors.white : Colors.black,
+                            textColor:
+                                Get.isDarkMode ? Colors.black87 : Colors.white),
                       ),
                       const SizedBox(height: 20)
                     ],

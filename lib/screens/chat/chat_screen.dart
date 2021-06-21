@@ -196,7 +196,10 @@ class ChatScreen extends GetView<ChatScreenController> {
                 child: Column(
                   children: [
                     Container(
-                      decoration: BoxDecoration(color: Get.theme.cardColor),
+                      decoration: BoxDecoration(
+                          color: Get.isDarkMode
+                              ? Colors.white
+                              : Colors.grey.shade300),
                       child: TextComposer(_room),
                     ),
                   ],

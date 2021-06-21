@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../constants.dart';
 
 class MySearchField extends StatelessWidget {
@@ -37,7 +38,7 @@ class MySearchField extends StatelessWidget {
               onChanged: onChanged,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.done,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(20),
                 hintText: 'Digite o nome do amigo',
                 hintStyle: kBodyText,
@@ -53,7 +54,7 @@ class MySearchField extends StatelessWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Colors.white,
+                    color: Get.isDarkMode ? Colors.white : Colors.black87,
                     width: 1,
                   ),
                   borderRadius: BorderRadius.only(
@@ -66,19 +67,23 @@ class MySearchField extends StatelessWidget {
           ),
           Container(
             padding: const EdgeInsets.all(1),
-            height: 63,
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            height: 59,
+            decoration: BoxDecoration(
+              color: Get.isDarkMode ? Colors.white : Colors.black87,
               borderRadius: BorderRadius.only(
                 bottomRight: Radius.circular(18),
                 topRight: Radius.circular(18),
               ),
             ),
             child: IconButton(
-              disabledColor: Colors.grey[300],
+              disabledColor:
+                  Get.isDarkMode ? Colors.grey[300] : Colors.grey.shade400,
               color: Colors.black,
               onPressed: showButton != false ? voidCallback : null,
-              icon: const Icon(Icons.search),
+              icon: const Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
             ),
           )
         ],
