@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
@@ -6,6 +8,8 @@ class UserModel {
   String email;
   String image;
   String phone;
+  String about;
+  bool isDarkMode;
 
   UserModel({
     this.id,
@@ -13,6 +17,8 @@ class UserModel {
     this.email,
     this.image,
     this.phone,
+    this.about,
+    this.isDarkMode,
   });
 
   UserModel.fromDocumentSnapsho(DocumentSnapshot doc) {
@@ -21,6 +27,8 @@ class UserModel {
     email = doc['email'] as String ?? '';
     image = doc['image'] as String ?? '';
     phone = doc['phone'] as String ?? '';
+    about = doc['about'] as String ?? '';
+    isDarkMode = doc['isDarkMode'] as bool ?? false;
   }
 
   // Map<String, dynamic> toJson(){
@@ -36,16 +44,20 @@ class UserModel {
       'email': email,
       'image': image,
       'phone': phone,
+      'about': about,
+      'isDarkMode': isDarkMode,
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      id: map['id'] as String ?? '',
-      name: map['name'] as String ?? '',
-      email: map['email'] as String ?? '',
-      image: map['image'] as String ?? '',
-      phone: map['phone'] as String ?? '',
+      id: map['id'].toString(),
+      name: map['name'].toString(),
+      email: map['email'].toString(),
+      image: map['image'].toString(),
+      phone: map['phone'].toString(),
+      about: map['about'].toString(),
+      isDarkMode: map['isDarkMode'] as bool,
     );
   }
 
@@ -55,6 +67,8 @@ class UserModel {
     String email,
     String image,
     String phone,
+    String about,
+    bool isDarkMode,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -62,6 +76,8 @@ class UserModel {
       email: email ?? this.email,
       image: image ?? this.image,
       phone: phone ?? this.phone,
+      about: about ?? this.about,
+      isDarkMode: isDarkMode ?? this.isDarkMode,
     );
   }
 
@@ -71,6 +87,33 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(id: $id, name: $name, email: $email, image: $image, phone: $phone)';
+    return 'UserModel(id: $id, name: $name, email: $email, image: $image, phone: $phone, about: $about, isDarkMode: $isDarkMode)';
+  }
+
+  String toJson() => json.encode(toMap());
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is UserModel &&
+        other.id == id &&
+        other.name == name &&
+        other.email == email &&
+        other.image == image &&
+        other.phone == phone &&
+        other.about == about &&
+        other.isDarkMode == isDarkMode;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        name.hashCode ^
+        email.hashCode ^
+        image.hashCode ^
+        phone.hashCode ^
+        about.hashCode ^
+        isDarkMode.hashCode;
   }
 }

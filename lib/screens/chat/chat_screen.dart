@@ -52,7 +52,7 @@ class ChatScreen extends GetView<ChatScreenController> {
                     controller.showSearch = !controller.showSearch;
                   }))
             ],
-            toolbarHeight: 80,
+            toolbarHeight: 75,
             brightness: Brightness.dark,
             backgroundColor: Colors.transparent,
             title: Obx(() => controller.showSearch != true
@@ -72,29 +72,35 @@ class ChatScreen extends GetView<ChatScreenController> {
             elevation: 0,
           ),
           body: Stack(
+            fit: StackFit.expand,
             alignment: Alignment.topCenter,
             children: [
-              Expanded(
-                child: controller.obx(
-                  (state) {
-                    return ListView.builder(
-                      reverse: true, //serve para inverter a ordem da lista
-                      itemCount: state.length,
-                      itemBuilder: (context, index) {
-                        return ChatMessage(
-                          data: state[index],
-                          mine: state[index]
-                              .containsValue(UserController.to.user?.id),
+              Column(
+                children: [
+                  Expanded(
+                    child: controller.obx(
+                      (state) {
+                        return ListView.builder(
+                          reverse: true, //serve para inverter a ordem da lista
+                          itemCount: state.length,
+                          itemBuilder: (context, index) {
+                            return ChatMessage(
+                              data: state[index],
+                              mine: state[index]
+                                  .containsValue(UserController.to.user?.id),
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                  // ignore: missing_return
-                  onError: (error) {
-                    Get.snackbar('Error ao carregar a mensagem', error,
-                        snackPosition: SnackPosition.TOP);
-                  },
-                ),
+                      // ignore: missing_return
+                      onError: (error) {
+                        Get.snackbar('Error ao carregar a mensagem', error,
+                            snackPosition: SnackPosition.TOP);
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 55),
+                ],
               ),
               Obx(
                 () => controller.userFriend.isNotEmpty
@@ -162,16 +168,16 @@ class ChatScreen extends GetView<ChatScreenController> {
                     : Container(),
               ),
               Positioned(
-                bottom: 65,
-                height: 25,
-                width: 400,
+                bottom: 59,
+                height: 20,
+                width: Get.mediaQuery.size.width,
                 child: Obx(() {
-                  return _composerController.isLoading != true
+                  return _composerController.isLoading != false
                       // ignore: avoid_unnecessary_containers
                       ? Container(
                           child: Row(
                             children: [
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               const CircularProgressIndicator(),
                               const Text(
                                 '  Carregando ...',
@@ -186,7 +192,7 @@ class ChatScreen extends GetView<ChatScreenController> {
               Positioned(
                 bottom: 0,
                 height: 56,
-                width: 400,
+                width: Get.mediaQuery.size.width,
                 child: Column(
                   children: [
                     Container(

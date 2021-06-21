@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:getwidget/components/drawer/gf_drawer_header.dart';
-import 'package:getwidget/getwidget.dart';
-import 'package:rolagem_dados/models/user.dart';
 
 class UserFriendProfile extends StatelessWidget {
   @override
@@ -25,12 +22,12 @@ class UserFriendProfile extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               userFriend['name'] as String,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
               ),
             ),
             Text(userFriend['email'] as String,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                 )),
           ],

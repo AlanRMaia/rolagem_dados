@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:rolagem_dados/controllers/bindings/auth_binding.dart';
 import 'package:rolagem_dados/controllers/bindings/chatScreen_bindings.dart';
 import 'package:rolagem_dados/screens/chat/chat_screen.dart';
 import 'package:rolagem_dados/screens/login.dart';
 import 'package:rolagem_dados/screens/signup.dart';
+import 'package:rolagem_dados/widget/theme/my_themes.dart';
 
-import 'constants.dart';
 import 'utils/root.dart';
 
 void main() async {
@@ -51,12 +50,9 @@ class MyApp extends StatelessWidget {
           binding: AuthBinding(),
         ),
       ],
-      theme: ThemeData(
-          textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
-          scaffoldBackgroundColor: kBackgroundColor,
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          iconTheme: const IconThemeData(color: Colors.black)),
+      themeMode: ThemeMode.system,
+      theme: MyThemes.lightTheme,
+      darkTheme: MyThemes.darkTheme,
       home: Root(),
     );
   }

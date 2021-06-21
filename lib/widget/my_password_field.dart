@@ -8,12 +8,20 @@ class MyPasswordField extends StatelessWidget {
     this.onChanged,
     this.showPassword,
     this.changeShowPassword,
+    this.maxLines = 1,
+    this.isDarkMode = true,
+    this.borderColorFocus = Colors.white,
+    this.borderWdth = 1,
   }) : super(key: key);
 
   final ValueChanged<String> onChanged;
   final TextEditingController controller;
   bool showPassword;
   VoidCallback changeShowPassword;
+  final int maxLines;
+  final bool isDarkMode;
+  final Color borderColorFocus;
+  final double borderWdth;
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +60,9 @@ class MyPasswordField extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Colors.white,
-              width: 1,
+            borderSide: BorderSide(
+              color: borderColorFocus,
+              width: borderWdth,
             ),
             borderRadius: BorderRadius.circular(18),
           ),

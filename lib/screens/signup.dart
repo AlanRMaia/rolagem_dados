@@ -3,6 +3,7 @@ import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/constants.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
+import 'package:rolagem_dados/widget/Image_avatar_preview.dart';
 import 'package:rolagem_dados/widget/my_password_field.dart';
 import 'package:rolagem_dados/widget/my_text_button.dart';
 import 'package:rolagem_dados/widget/my_text_field.dart';
@@ -49,26 +50,27 @@ class SignUp extends GetWidget<AuthController> {
                   child: Column(
                     children: [
                       Obx(() => ImagePreview(
-                            callbackShowImage: controller.showImage,
+                            isEdit: true,
+                            callbackShowImage: controller.showImageGallery,
                             imgUrl: controller.imgUrl,
                           )),
-                      OutlinedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          side: const BorderSide(color: Colors.grey),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(32.0),
-                          ),
-                        ),
-                        icon: const Icon(
-                          Icons.attach_file,
-                          color: Colors.white,
-                        ),
-                        label: const Text(
-                          'Galeria',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        onPressed: () => controller.showImageGallery(),
-                      ),
+                      // OutlinedButton.icon(
+                      //   style: ElevatedButton.styleFrom(
+                      //     side: const BorderSide(color: Colors.grey),
+                      //     shape: RoundedRectangleBorder(
+                      //       borderRadius: BorderRadius.circular(32.0),
+                      //     ),
+                      //   ),
+                      //   icon: const Icon(
+                      //     Icons.attach_file,
+                      //     color: Colors.white,
+                      //   ),
+                      //   label: const Text(
+                      //     'Galeria',
+                      //     style: TextStyle(color: Colors.grey),
+                      //   ),
+                      //   onPressed: () => controller.showImageGallery(),
+                      // ),
                       Flexible(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,16 +79,22 @@ class SignUp extends GetWidget<AuthController> {
                               height: 20,
                             ),
                             MyTextField(
+                              borderColorFocus:
+                                  Get.isDarkMode ? Colors.white : Colors.black,
                               controller: nameController,
                               hintText: 'Nome',
                               inputType: TextInputType.name,
                             ),
                             MyTextField(
+                              borderColorFocus:
+                                  Get.isDarkMode ? Colors.white : Colors.black,
                               controller: emailController,
                               hintText: 'Email',
                               inputType: TextInputType.emailAddress,
                             ),
                             MyTextField(
+                              borderColorFocus:
+                                  Get.isDarkMode ? Colors.white : Colors.black,
                               controller: phoneController,
                               hintText: 'Telefone',
                               inputType: TextInputType.phone,
@@ -94,6 +102,9 @@ class SignUp extends GetWidget<AuthController> {
                             Expanded(
                               child: Obx(
                                 () => MyPasswordField(
+                                  borderColorFocus: Get.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
                                   controller: passwordController,
                                   onChanged: (value) {},
                                   showPassword: controller.isPassWordVisible,
@@ -122,8 +133,10 @@ class SignUp extends GetWidget<AuthController> {
                               child: Text(
                                 "Entrar",
                                 style: kBodyText.copyWith(
-                                  color: Colors.white,
-                                ),
+                                    color: Get.isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
                           ],
@@ -142,8 +155,9 @@ class SignUp extends GetWidget<AuthController> {
                               controller.imgUrl,
                             );
                           },
-                          bgColor: Colors.white,
-                          textColor: Colors.black87,
+                          bgColor: Get.isDarkMode ? Colors.white : Colors.black,
+                          textColor:
+                              Get.isDarkMode ? Colors.black87 : Colors.white,
                         ),
                       ),
                       const SizedBox(height: 10)

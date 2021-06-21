@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/models/user.dart';
+import 'package:rolagem_dados/widget/theme/my_themes.dart';
 
 class UserController extends GetxController {
   static UserController get to => Get.find();
@@ -10,6 +12,13 @@ class UserController extends GetxController {
 
   set user(UserModel value) {
     _userModel.value = value;
+  }
+
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    Get.changeTheme(MyThemes.darkTheme);
+    super.onInit();
   }
 
   void clear() {

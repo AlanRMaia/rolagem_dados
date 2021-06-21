@@ -43,12 +43,41 @@ class Database extends GetxController {
     }
   }
 
+  Future<void> editUser(UserModel user, File imgFile, String imgUrl) async {
+    try {
+      String imgUrlStorage;
+
+      if (imgFile != null) {
+        imgUrlStorage = await imageUser(imgFile: imgFile, imgUrl: imgUrl);
+      }
+      _firestore.collection('users').document(user.id).updateData({
+        'name': user.name,
+        'email': user.email,
+        'about': user.about,
+        imgUrlStorage == null ? '' : 'image': imgUrlStorage,
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<UserModel> getUser(String uid) async {
     try {
       final DocumentSnapshot doc =
           await _firestore.collection('users').document(uid).get();
 
       return UserModel.fromDocumentSnapsho(doc);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> changeDarkMode({bool darkMode, String uid}) async {
+    try {
+      _firestore
+          .collection('users')
+          .document(uid ?? UserController.to.user.id)
+          .updateData({'isDarkMode': darkMode});
     } catch (e) {
       rethrow;
     }
@@ -112,8 +141,14 @@ class Database extends GetxController {
     }
   }
 
-  Future<String> imageUser(File imgFile) async {
+  Future<String> imageUser({File imgFile, String imgUrl}) async {
     try {
+      // final imgStorageDelete = UserController.to.user?.image;
+
+      // if (imgUrl != imgStorageDelete) {
+      //   await FirebaseStorage.instance.ref().child(imgStorageDelete).delete();
+      // }
+
       final StorageUploadTask task = FirebaseStorage.instance
           .ref()
           .child('imageUsers')

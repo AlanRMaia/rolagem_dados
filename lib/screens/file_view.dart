@@ -28,7 +28,7 @@ class FileView extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Image.network(
                   data['fileUrl'].toString(),
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   height: double.infinity,
                 )),
       ),

@@ -13,6 +13,10 @@ class MyTextField extends StatelessWidget {
     this.voidCallback,
     this.suffixIcon,
     this.prefixIcon,
+    this.maxLines = 1,
+    this.isDarkMode,
+    this.borderWdth = 1,
+    this.borderColorFocus = Colors.white,
   }) : super(key: key);
   final String hintText;
   final TextInputType inputType;
@@ -22,12 +26,17 @@ class MyTextField extends StatelessWidget {
   final VoidCallback voidCallback;
   final Icon suffixIcon;
   final Icon prefixIcon;
+  final int maxLines;
+  final bool isDarkMode;
+  final Color borderColorFocus;
+  final double borderWdth;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextField(
+        maxLines: maxLines,
         onChanged: onChaged,
         controller: controller,
         style: kBodyText.copyWith(color: textColor),
@@ -47,9 +56,9 @@ class MyTextField extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Colors.white,
-              width: 1,
+            borderSide: BorderSide(
+              color: borderColorFocus,
+              width: borderWdth,
             ),
             borderRadius: BorderRadius.circular(18),
           ),

@@ -46,14 +46,14 @@ class Login extends GetWidget<AuthController> {
                       Flexible(
                           child: Column(
                         children: [
-                          const Text(
+                          Text(
                             "Seja bem vindo",
                             style: kHeadline,
                           ),
                           const SizedBox(
                             height: 10,
                           ),
-                          const Text(
+                          Text(
                             "Estávamos à sua espera",
                             style: kBodyText2,
                           ),
@@ -61,12 +61,17 @@ class Login extends GetWidget<AuthController> {
                             height: 60,
                           ),
                           MyTextField(
+                            borderColorFocus:
+                                Get.isDarkMode ? Colors.white : Colors.black,
                             controller: emailController,
                             hintText: 'Email',
                             inputType: TextInputType.emailAddress,
                           ),
                           Expanded(
                             child: Obx(() => MyPasswordField(
+                                  borderColorFocus: Get.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
                                   controller: passwordController,
                                   showPassword: controller.isPassWordVisible,
                                   changeShowPassword: () =>
@@ -90,8 +95,10 @@ class Login extends GetWidget<AuthController> {
                             child: Text(
                               'Registrar',
                               style: kBodyText.copyWith(
-                                color: Colors.white,
-                              ),
+                                  color: Get.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontWeight: FontWeight.bold),
                             ),
                           )
                         ],
@@ -105,8 +112,8 @@ class Login extends GetWidget<AuthController> {
                             controller.login(
                                 emailController.text, passwordController.text);
                           },
-                          bgColor: Colors.white,
-                          textColor: Colors.black87,
+                          bgColor: Get.isDarkMode ? Colors.white : Colors.black,
+                          textColor: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 20)

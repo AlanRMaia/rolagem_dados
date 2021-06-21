@@ -8,12 +8,17 @@ import 'package:rolagem_dados/models/user.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 
 class AuthController extends GetxController {
+  final UserController _userController;
+
+  AuthController(this._userController);
+
   static AuthController get to => Get.find();
   final Database _database = Get.put(Database());
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Rx<FirebaseUser> _firebaseUser = Rx<FirebaseUser>();
   final _isPassWordVisible = false.obs;
   final _isLoading = false.obs;
+  final _isDarkMode = true.obs;
   File _imgFile;
   final RxString _imgUrl = ''.obs;
   final picker = ImagePicker();
@@ -37,10 +42,15 @@ class AuthController extends GetxController {
     _isLoading.value = value;
   }
 
+  bool get isDarkMode => _isDarkMode.value;
+  set isDarkMode(bool value) {
+    _isDarkMode.value = value;
+  }
+
   FirebaseUser get user => _firebaseUser.value;
 
   @override
-  void onInit() {
+  void onInit() async {
     _firebaseUser.bindStream(_auth.onAuthStateChanged);
   }
 
@@ -56,7 +66,7 @@ class AuthController extends GetxController {
       //create a user in firestore
 
       // ignore: parameter_assignments
-      imgUrl = await _database.imageUser(_imgFile);
+      imgUrl = await _database.imageUser(imgFile: _imgFile);
 
       final UserModel _user = UserModel(
         id: _authResult.user.uid,
@@ -81,6 +91,31 @@ class AuthController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
       isLoading = false;
+    }
+  }
+
+  Future<void> getUser() async {
+    try {
+      final uid = _firebaseUser.value.uid;
+      Get.find<UserController>().user = await _database.getUser(uid);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> editUser(UserModel user) async {
+    try {
+      await _database.editUser(user, _imgFile, imgUrl);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> changeDarkMode({bool darkMode, String uid}) async {
+    try {
+      await _database.changeDarkMode(darkMode: darkMode, uid: uid);
+    } catch (e) {
+      rethrow;
     }
   }
 

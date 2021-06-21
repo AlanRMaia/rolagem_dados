@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/home_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
-import 'package:rolagem_dados/main.dart';
 import 'package:rolagem_dados/screens/presentation.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/widget/home/dialog_room_create.dart';
@@ -39,7 +38,6 @@ class Home extends GetWidget<AuthController> {
                 ),
                 title: Text(
                   _.user.name,
-                  style: const TextStyle(color: Colors.white),
                 ),
               );
             } else {

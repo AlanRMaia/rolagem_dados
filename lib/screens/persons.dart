@@ -7,7 +7,7 @@ class Persons extends StatelessWidget {
       appBar: AppBar(
         brightness: Brightness.dark,
         automaticallyImplyLeading: false,
-        title: Text('Personagens'),
+        title: const Text('Personagens'),
       ),
       body: Container(),
     );
