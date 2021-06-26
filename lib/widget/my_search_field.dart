@@ -9,6 +9,7 @@ class MySearchField extends StatelessWidget {
   final VoidCallback voidCallback;
   final Function(String) onSubmited;
   final Object model;
+  final bool theme;
 
   const MySearchField({
     Key key,
@@ -18,6 +19,7 @@ class MySearchField extends StatelessWidget {
     this.showButton,
     this.onSubmited,
     this.model,
+    this.theme,
   }) : super(key: key);
 
   @override
@@ -28,9 +30,7 @@ class MySearchField extends StatelessWidget {
         children: [
           Flexible(
             child: TextField(
-              style: kBodyText.copyWith(
-                color: Colors.white,
-              ),
+              style: kBodyText.copyWith(),
               controller: controller,
               onSubmitted: (text) {
                 onSubmited(text);
@@ -39,10 +39,10 @@ class MySearchField extends StatelessWidget {
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(20),
+                contentPadding: const EdgeInsets.all(20),
                 hintText: 'Digite o nome do amigo',
                 hintStyle: kBodyText,
-                enabledBorder: OutlineInputBorder(
+                enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Colors.grey,
                     width: 1,
@@ -54,10 +54,10 @@ class MySearchField extends StatelessWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Get.isDarkMode ? Colors.white : Colors.black87,
+                    color: theme ? Colors.white : Colors.black87,
                     width: 1,
                   ),
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(18),
                     topLeft: Radius.circular(18),
                   ),
@@ -67,22 +67,21 @@ class MySearchField extends StatelessWidget {
           ),
           Container(
             padding: const EdgeInsets.all(1),
-            height: 59,
+            height: 58.5,
             decoration: BoxDecoration(
-              color: Get.isDarkMode ? Colors.white : Colors.black87,
-              borderRadius: BorderRadius.only(
+              color: theme ? Colors.white : Colors.black87,
+              borderRadius: const BorderRadius.only(
                 bottomRight: Radius.circular(18),
                 topRight: Radius.circular(18),
               ),
             ),
             child: IconButton(
-              disabledColor:
-                  Get.isDarkMode ? Colors.grey[300] : Colors.grey.shade400,
-              color: Colors.black,
-              onPressed: showButton != false ? voidCallback : null,
-              icon: const Icon(
+              disabledColor: Colors.grey[300],
+              color: theme == true ? Colors.black : Colors.white,
+              onPressed: voidCallback,
+              icon: Icon(
                 Icons.search,
-                color: Colors.white,
+                color: theme != false ? Colors.black : Colors.white,
               ),
             ),
           )

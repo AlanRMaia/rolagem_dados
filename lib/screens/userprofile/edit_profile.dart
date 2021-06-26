@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
+import 'package:rolagem_dados/models/user.dart';
+import 'package:rolagem_dados/widget/signup/image_preview.dart';
 import 'package:rolagem_dados/widget/theme/my_themes.dart';
 import 'package:rolagem_dados/widget/userprofile/profile.dart';
 import 'package:rolagem_dados/widget/userprofile/textfield.dart';
@@ -57,14 +59,19 @@ class EditProfile extends GetView<AuthController> {
                   ),
                   child: Column(
                     children: [
-                      Profile(
-                        imagePath: _user.image,
-                        isEdit: true,
-                        onClicked: () async {
-                          await controller.showImageGallery();
-                          _user.image = controller.imgUrl;
-                        },
-                      ),
+                      Obx(() => ImagePreview(
+                            isEdit: true,
+                            callbackShowImage: controller.showImageGallery,
+                            imgUrl: controller.imgUrl ?? _user.image,
+                          )),
+                      // Profile(
+                      //   imagePath: _user.image,
+                      //   isEdit: true,
+                      //   onClicked: () async {
+                      //     await controller.showImageGallery();
+                      //     _user.image = controller.imgUrl;
+                      //   },
+                      // ),
                       Flexible(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,7 +137,7 @@ class EditProfile extends GetView<AuthController> {
                               maxLines: 5,
                               controller: sobremimController,
                               hintText: 'Descreva a sua biografia',
-                              inputType: TextInputType.phone,
+                              inputType: TextInputType.multiline,
                             ),
                             const SizedBox(height: 50)
                           ],
@@ -141,13 +148,14 @@ class EditProfile extends GetView<AuthController> {
                             buttonName: 'Salvar',
                             isLoading: controller.isLoading,
                             onTap: () {
-                              controller.createUser(
-                                nameController.text,
-                                emailController.text,
-                                passwordController.text,
-                                phoneController.text,
-                                controller.imgUrl,
+                              controller.editUser(
+                                uid: _user.id,
+                                name: nameController.text,
+                                email: emailController.text,
+                                phone: phoneController.text,
+                                about: sobremimController.text,
                               );
+                              Get.back();
                             },
                             bgColor: Get.isDarkMode
                                 ? MyThemes.darkTheme.colorScheme.primary

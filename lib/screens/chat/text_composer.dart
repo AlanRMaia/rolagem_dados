@@ -149,6 +149,8 @@ class TextComposer extends StatelessWidget {
             children: [
               Obx(
                 () => PopupMenuButton(
+                  color: Colors.white,
+                  elevation: 10,
                   tooltip: 'Escolha o seu dado',
                   icon: Image.asset(controller.imgDados),
                   iconSize: 30,

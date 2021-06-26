@@ -103,9 +103,24 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> editUser(UserModel user) async {
+  Future<void> editUser({
+    String uid,
+    String name,
+    String email,
+    String password,
+    String phone,
+    String about,
+  }) async {
     try {
-      await _database.editUser(user, _imgFile, imgUrl);
+      final UserModel _user = UserModel(
+        id: uid,
+        name: name,
+        email: email,
+        phone: phone,
+        image: imgUrl,
+        about: about,
+      );
+      await _database.editUser(_user, _imgFile, imgUrl);
     } catch (e) {
       rethrow;
     }

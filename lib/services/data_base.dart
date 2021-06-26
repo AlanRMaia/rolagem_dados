@@ -54,7 +54,7 @@ class Database extends GetxController {
         'name': user.name,
         'email': user.email,
         'about': user.about,
-        imgUrlStorage == null ? '' : 'image': imgUrlStorage,
+        'image': imgUrlStorage ?? imgUrl,
       });
     } catch (e) {
       rethrow;
