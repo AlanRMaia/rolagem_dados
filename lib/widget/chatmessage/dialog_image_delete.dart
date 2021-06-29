@@ -11,7 +11,7 @@ class DialogImageDelete extends GetView<TextComposerController> {
   final Map<String, dynamic> data;
   final bool mine;
 
-  const DialogImageDelete(this.mine, {Key key, @required this.data})
+  const DialogImageDelete({@required this.mine, Key key, @required this.data})
       : super(key: key);
 
   @override

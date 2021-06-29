@@ -43,18 +43,19 @@ class Database extends GetxController {
     }
   }
 
-  Future<void> editUser(UserModel user, File imgFile, String imgUrl) async {
+  Future<void> editUser(UserModel user, File imgFile) async {
     try {
       String imgUrlStorage;
 
       if (imgFile != null) {
-        imgUrlStorage = await imageUser(imgFile: imgFile, imgUrl: imgUrl);
+        imgUrlStorage = await imageUser(
+            imgFile: imgFile, imgUrl: UserController.to.user.image);
       }
       _firestore.collection('users').document(user.id).updateData({
         'name': user.name,
         'email': user.email,
         'about': user.about,
-        'image': imgUrlStorage ?? imgUrl,
+        'image': imgUrlStorage ?? user.image
       });
     } catch (e) {
       rethrow;
@@ -173,6 +174,7 @@ class Database extends GetxController {
         'imgUrl': await _imageRoom(imgFile),
         'name': name,
         'admUserId': user.id,
+        'admin': UserController.to.user.toMap(),
       });
       final id = doc.documentID;
 
@@ -275,7 +277,7 @@ class Database extends GetxController {
       if (imgFile != null) {
         final message = await _firestore
             .collection('rooms')
-            .document(room.id)
+            .document(room?.id)
             .collection('messages')
             .add({
           'fileUrl': file.url,
@@ -328,21 +330,26 @@ class Database extends GetxController {
   }
 
   Future<void> editSubmitted(
-      String idMessage, String message, String idRoom) async {
+      {String idMessage, String message, String idRoom, int recomend}) async {
     if (UserController.to.user != null) {
-      _editMessage(idMessage, message, idRoom);
+      _editMessage(
+          idMessage: idMessage,
+          message: message,
+          idRoom: idRoom,
+          recomend: recomend);
     }
   }
 
   Future<void> _editMessage(
-      String idMessage, String message, String idRoom) async {
+      {String idMessage, String message, String idRoom, int recomend}) async {
     try {
       await _firestore
           .collection('rooms')
           .document(idRoom)
           .collection('messages')
           .document(idMessage)
-          .updateData({'text': message});
+          .updateData(
+              message != null ? {'text': message} : {'recomend': recomend});
     } catch (e) {
       rethrow;
     }
@@ -368,7 +375,7 @@ class Database extends GetxController {
   }
 
   Future<List<Map<String, dynamic>>> loadFriends(
-      {String name, String userId}) async {
+      {String email, String userId}) async {
     try {
       final QuerySnapshot userFriends = await _firestore
           .collection('users')
@@ -378,61 +385,230 @@ class Database extends GetxController {
 
       final List<Map<String, dynamic>> allFriends = [];
 
-      if (name != null) {
-        for (final DocumentSnapshot friendDoc in userFriends.documents) {
-          if (friendDoc.data['name'] == name) {
-            allFriends.add(friendDoc.data);
+      if (email != null) {
+        final QuerySnapshot _users =
+            await _firestore.collection('users').getDocuments();
+
+        final List<Map<String, dynamic>> allUsers = [];
+
+        for (final user in _users.documents) {
+          if (user.data['email'] == email) {
+            allUsers.add(user.data);
           }
         }
 
-        return allFriends;
+        return allUsers;
       } else {
-        return userFriends.documents.map((e) => e.data).toList();
+        for (final DocumentSnapshot friendId in userFriends.documents) {
+          final DocumentSnapshot friendDoc = await _firestore
+              .collection('users')
+              .document(friendId.data['id'].toString())
+              .get();
+
+          allFriends.add(friendDoc.data);
+        }
+        return allFriends;
       }
+
+      // if (name != null) {
+      //   for (final DocumentSnapshot friendDoc in userFriends.documents) {
+      //     if (friendDoc.data['name'] == name) {
+      //       allFriends.add(friendDoc.data);
+      //     }
+      //   }
+
+      //   return allFriends;
+      // } else {
+      //   return userFriends.documents.map((e) => e.data).toList();
+      // }
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> addFriendSubmited(Map<String, dynamic> friendUser) async {
+  Future<int> numberOfRooms() async {
+    try {
+      final List<Map<String, dynamic>> _rooms = [];
+
+      final doc = await Firestore.instance
+          .collection('users')
+          .document(UserController.to.user.id)
+          .collection('rooms')
+          .getDocuments();
+
+      for (final room in doc.documents) {
+        _rooms.add(room.data);
+      }
+
+      return _rooms.length;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<int> numberOfRoomsFriend(UserModel user) async {
+    try {
+      final List<Map<String, dynamic>> _rooms = [];
+
+      final doc = await Firestore.instance
+          .collection('users')
+          .document(user.id)
+          .collection('rooms')
+          .getDocuments();
+
+      for (final room in doc.documents) {
+        _rooms.add(room.data);
+      }
+
+      return _rooms.length;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<int> numberOfFriends() async {
+    try {
+      final List<Map<String, dynamic>> _friends = [];
+      final doc = await Firestore.instance
+          .collection('users')
+          .document(UserController.to.user.id)
+          .collection('friends')
+          .getDocuments();
+
+      for (final friend in doc.documents) {
+        _friends.add(friend.data);
+      }
+
+      return _friends.length;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<int> numberOfFriendsFriend(UserModel user) async {
+    try {
+      final List<Map<String, dynamic>> _friends = [];
+      final doc = await Firestore.instance
+          .collection('users')
+          .document(user.id)
+          .collection('friends')
+          .getDocuments();
+
+      for (final friend in doc.documents) {
+        _friends.add(friend.data);
+      }
+
+      return _friends.length;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> addFriendSubmited(UserModel friendUser) async {
     if (UserController.to.user != null) {
       _addFriend(UserController.to.user.id, friendUser);
     }
   }
 
-  Future<void> _addFriend(
-      String userId, Map<String, dynamic> friendUser) async {
+  Future<void> _addFriend(String userId, UserModel friendUser) async {
     try {
+      final userFriend = await _firestore
+          .collection('users')
+          .document(UserController.to.user.id)
+          .collection('friends')
+          .getDocuments();
+
+      for (final friend in userFriend.documents) {
+        if (friend.data['email'] == friendUser.email) {
+          return Get.snackbar(friendUser.name, 'Esse usuário já é seu amigo',
+              snackPosition: SnackPosition.BOTTOM);
+        }
+      }
+
       _firestore
           .collection('users')
           .document(userId)
           .collection('friends')
-          .add(friendUser);
+          .add(friendUser.toMap());
+      Get.snackbar(friendUser.name, 'Foi adicionado como amigo',
+          snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<List<Map<String, dynamic>>> resultFriends(String name) async {
+  Future<void> deleteFriend(UserModel user, String friendId) async {
     try {
-      final QuerySnapshot userFriends =
-          await _firestore.collection('users').getDocuments();
+      final friendsDocs = await _firestore
+          .collection('users')
+          .document(user.id)
+          .collection('friends')
+          .getDocuments();
 
-      final List<Map<String, dynamic>> allFriends = [];
-
-      for (final DocumentSnapshot friendDoc in userFriends.documents) {
-        if (friendDoc.data['name'] == name) {
-          allFriends.add(friendDoc?.data);
+      for (final friendDoc in friendsDocs.documents) {
+        if (friendDoc.data['id'] == friendId) {
+          await _firestore
+              .collection('users')
+              .document(user.id)
+              .collection('friends')
+              .document(friendDoc.documentID)
+              .delete();
         }
       }
-
-      return allFriends;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<List<Map<String, dynamic>>> userFriends(String name) async {
+  Future<void> deleteUserRoom(RoomModel room, String userId) async {
+    try {
+      final usersDocs = await _firestore
+          .collection('rooms')
+          .document(room.id)
+          .collection('users')
+          .getDocuments();
+
+      for (final userDoc in usersDocs.documents) {
+        if (userDoc.data['id'] == userId) {
+          await _firestore
+              .collection('rooms')
+              .document(room.id)
+              .collection('users')
+              .document(userDoc.documentID)
+              .delete();
+        }
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> searchUsersEmail(String email) async {
+    try {
+      if (email != null) {
+        final QuerySnapshot _users =
+            await _firestore.collection('users').getDocuments();
+
+        final List<Map<String, dynamic>> allUsers = [];
+
+        for (var user in _users.documents) {
+          if (user.data['email'] == email) {
+            allUsers.add(user.data);
+          }
+        }
+
+        return allUsers;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> userFriends(String email) async {
     try {
       final QuerySnapshot userFriends = await _firestore
           .collection('users')
@@ -443,7 +619,7 @@ class Database extends GetxController {
       final List<Map<String, dynamic>> allFriends = [];
 
       for (final DocumentSnapshot friendDoc in userFriends.documents) {
-        if (friendDoc.data['name'] == name) {
+        if (friendDoc.data['email'] == email) {
           allFriends.add(friendDoc?.data);
         }
       }
@@ -453,13 +629,76 @@ class Database extends GetxController {
     }
   }
 
-  Future<void> addFriendRoom(String userId, String roomId) async {
+  Future<void> addFriendRoom(UserModel friend, String roomId) async {
     try {
-      _firestore
+      final friendRoom = await _firestore
+          .collection('users')
+          .document(friend.id)
+          .collection('rooms')
+          .getDocuments();
+
+      for (final room in friendRoom.documents) {
+        if (room['id'] == roomId) {
+          return Get.snackbar(friend.name, 'Este usuário já está na sala ',
+              snackPosition: SnackPosition.BOTTOM);
+        }
+      }
+
+      await _firestore
+          .collection('users')
+          .document(friend.id)
+          .collection('rooms')
+          .add({'id': roomId});
+
+      await _firestore
+          .collection('rooms')
+          .document(roomId)
+          .collection('users')
+          .add({'id': friend.id});
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> exitRoom(RoomModel room, String userId) async {
+    try {
+      final roomDocs = await _firestore
           .collection('users')
           .document(userId)
           .collection('rooms')
-          .add({'id': roomId});
+          .getDocuments();
+
+      for (final roomDoc in roomDocs.documents) {
+        if (roomDoc.data['id'] == room.id) {
+          await _firestore
+              .collection('users')
+              .document(userId)
+              .collection('rooms')
+              .document(roomDoc.documentID)
+              .delete();
+        }
+      }
+
+      final userRoomDocs = await _firestore
+          .collection('rooms')
+          .document(room.id)
+          .collection('users')
+          .getDocuments();
+
+      for (final userRoomDoc in userRoomDocs.documents) {
+        if (userRoomDoc.data['id'] == userId) {
+          await _firestore
+              .collection('rooms')
+              .document(room.id)
+              .collection('users')
+              .document(userRoomDoc.documentID)
+              .delete();
+        }
+      }
+
+      if (userId == room.admUserId) {
+        await _firestore.collection('rooms').document(room.id).delete();
+      }
     } catch (e) {
       rethrow;
     }

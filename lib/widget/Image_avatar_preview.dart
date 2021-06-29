@@ -1,16 +1,21 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ImageAvatarPreview extends StatelessWidget {
   final File arquivo;
+  final String imgUrl;
   final Icon icon;
   final VoidCallback onClicked;
   final bool isEdit;
 
   const ImageAvatarPreview(
-      {Key key, this.arquivo, this.icon, this.onClicked, this.isEdit})
+      {Key key,
+      this.arquivo,
+      this.icon,
+      this.onClicked,
+      this.isEdit,
+      this.imgUrl})
       : super(key: key);
 
   @override
@@ -27,12 +32,8 @@ class ImageAvatarPreview extends StatelessWidget {
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
                   child: arquivo != null
-                      ? Image.file(
-                          arquivo,
-                          fit: BoxFit.cover,
-                        )
-                      : CircleAvatar(
-                          backgroundColor: Colors.grey[100], child: icon)),
+                      ? Image.file(arquivo, fit: BoxFit.cover)
+                      : Image.network(imgUrl, fit: BoxFit.cover)),
             ),
             Positioned(
                 bottom: 0,

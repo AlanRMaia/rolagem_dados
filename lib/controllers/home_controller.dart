@@ -64,15 +64,23 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
         for (final DocumentSnapshot room in snapshot.documents) {
           final DocumentSnapshot roomDoc = await _firestore
               .collection('rooms')
-              .document(room.data['id'].toString())
+              .document(room?.data['id'].toString())
               .get();
 
-          _rooms.add(RoomModel.fromDocumentSnapsho(roomDoc));
+          _rooms?.add(RoomModel?.fromDocumentSnapsho(roomDoc));
         }
         change(_rooms, status: RxStatus.success());
       });
     } catch (e) {
       change([], status: RxStatus.error());
+      rethrow;
+    }
+  }
+
+  Future<void> exitRoom(RoomModel room, String userId) async {
+    try {
+      await _database.exitRoom(room, userId);
+    } catch (e) {
       rethrow;
     }
   }

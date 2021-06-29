@@ -79,9 +79,9 @@ class ChatScreenController extends GetxController
     });
   }
 
-  Future<void> loadFriends(String name) async {
+  Future<void> loadFriends(String email) async {
     try {
-      final data = await _database.loadFriends(name: name);
+      final data = await _database.loadFriends(email: email);
       userFriend.addAll(data.map((map) => UserModel.fromMap(map)));
     } catch (e) {
       print(e);
@@ -89,9 +89,9 @@ class ChatScreenController extends GetxController
     }
   }
 
-  Future<void> addFriendRoom(String userId, String roomId) async {
+  Future<void> addFriendRoom(UserModel friend, String roomId) async {
     try {
-      _database.addFriendRoom(userId, roomId);
+      _database.addFriendRoom(friend, roomId);
     } catch (e) {
       rethrow;
     }

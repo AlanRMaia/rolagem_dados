@@ -3,9 +3,11 @@ import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/home_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
+import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/screens/presentation.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/widget/home/dialog_room_create.dart';
+import 'package:rolagem_dados/widget/homePage/dialog_exit_room.dart';
 
 class Home extends GetWidget<AuthController> {
   final TextEditingController nameController = TextEditingController();
@@ -28,7 +30,9 @@ class Home extends GetWidget<AuthController> {
           initState: (_) async {
             Get.find<UserController>().user =
                 await Database().getUser(controller.user.uid);
+            await controller.numberOfRooms();
             _homeController.loadRooms(UserController.to.user.id);
+            await controller.numberOfFriends();
           },
           builder: (_) {
             if (_.user.name != null) {
@@ -68,6 +72,13 @@ class Home extends GetWidget<AuthController> {
                       itemBuilder: (context, index) {
                         return Card(
                           child: ListTile(
+                            onLongPress: () => showDialog(
+                              context: context,
+                              builder: (context) => DialogExitRoom(
+                                room: state[index],
+                                user: UserController.to.user,
+                              ),
+                            ),
                             leading: CircleAvatar(
                               backgroundImage:
                                   NetworkImage(state[index].imgUrl),

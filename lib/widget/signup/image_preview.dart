@@ -6,6 +6,7 @@ import '../Image_avatar_preview.dart';
 
 class ImagePreview extends StatelessWidget {
   final String imgUrl;
+  final String fileUrl;
   final VoidCallback callbackShowImage;
   final bool isEdit;
   const ImagePreview({
@@ -13,6 +14,7 @@ class ImagePreview extends StatelessWidget {
     this.imgUrl,
     this.callbackShowImage,
     this.isEdit,
+    this.fileUrl,
   }) : super(key: key);
 
   @override
@@ -21,18 +23,14 @@ class ImagePreview extends StatelessWidget {
         onTap: () async {
           callbackShowImage();
         },
-        child: imgUrl != ''
+        child: fileUrl != null
             ? ImageAvatarPreview(
-                arquivo: File(imgUrl),
+                arquivo: File(fileUrl),
                 isEdit: isEdit,
               )
             : ImageAvatarPreview(
                 isEdit: isEdit,
-                icon: const Icon(
-                  Icons.add_a_photo_outlined,
-                  color: Colors.black87,
-                  size: 60,
-                ),
+                imgUrl: imgUrl,
               ));
   }
 }

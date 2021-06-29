@@ -49,7 +49,7 @@ class TextComposer extends StatelessWidget {
                     await picker.getImage(source: ImageSource.camera);
                 if (imgFile == null) return;
                 controller.handleSubmitted(
-                    file: File(imgFile.path), room: roomModel);
+                    file: File(imgFile.path), room: roomModel, type: 'image');
                 _reset();
               },
             ),

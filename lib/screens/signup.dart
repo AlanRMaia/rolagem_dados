@@ -52,7 +52,7 @@ class SignUp extends GetWidget<AuthController> {
                       Obx(() => ImagePreview(
                             isEdit: true,
                             callbackShowImage: controller.showImageGallery,
-                            imgUrl: controller.imgUrl,
+                            fileUrl: controller.imgUrl,
                           )),
                       // OutlinedButton.icon(
                       //   style: ElevatedButton.styleFrom(

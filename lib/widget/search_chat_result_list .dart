@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:rolagem_dados/controllers/add_friend_controller.dart';
 import 'package:rolagem_dados/models/user.dart';
 
 import 'addfriend/dialog_add_friend.dart';
 
-class SearchResultList extends StatelessWidget {
+class SearchChatResultList extends StatelessWidget {
   final Map<String, dynamic> data;
   final VoidCallback voidCallback;
   final VoidCallback voidCallbackReload;
   final VoidCallback onPressed;
   final UserModel user;
-  const SearchResultList(
+  const SearchChatResultList(
       {Key key,
       this.data,
       this.voidCallback,
@@ -37,30 +38,33 @@ class SearchResultList extends StatelessWidget {
             ],
           ),
           child: ListTile(
+                enableFeedback: true,
                 onTap: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return DialogAddFriend(
-                          user: user,
-                          data: data,
-                          voidCallback: voidCallback,
-                          //() {
+                  voidCallback();
+                  voidCallbackReload();
+                  // showDialog(
+                  //     context: context,
+                  //     builder: (context) {
+                  //       return DialogAddFriend(
+                  //         user: user,
+                  //         data: data,
+                  //         voidCallback: voidCallback,
+                  //         //() {
 
-                          //   _addFriend(AddFriendController
-                          //       .to.resultFriends[index]);
-                          //   AddFriendController
-                          //       .to.resultFriends
-                          //       .clear();
-                          // },
-                          voidCallbackReload: voidCallbackReload,
-                          //() {
-                          //   _friendController.resultFriends
-                          //       .clear();
-                          //   _reload();
-                          // },
-                        );
-                      });
+                  //         //   _addFriend(AddFriendController
+                  //         //       .to.resultFriends[index]);
+                  //         //   AddFriendController
+                  //         //       .to.resultFriends
+                  //         //       .clear();
+                  //         // },
+                  //         voidCallbackReload: voidCallbackReload,
+                  //         //() {
+                  //         //   _friendController.resultFriends
+                  //         //       .clear();
+                  //         //   _reload();
+                  //         // },
+                  //       );
+                  //     });
                 },
                 leading: CircleAvatar(
                   backgroundImage:

@@ -57,7 +57,7 @@ class DialogAddFriendRoom extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    if (data == null && model == null) MySearchField(),
+                    if (data == null && model == null) const MySearchField(),
                     Text(
                       map['text'] as String,
                       style: const TextStyle(fontSize: 10),

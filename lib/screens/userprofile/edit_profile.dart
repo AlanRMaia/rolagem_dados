@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
-import 'package:rolagem_dados/models/user.dart';
 import 'package:rolagem_dados/widget/signup/image_preview.dart';
 import 'package:rolagem_dados/widget/theme/my_themes.dart';
-import 'package:rolagem_dados/widget/userprofile/profile.dart';
-import 'package:rolagem_dados/widget/userprofile/textfield.dart';
 import 'package:rolagem_dados/widget/widget.dart';
-
-import '../../constants.dart';
 
 class EditProfile extends GetView<AuthController> {
   final _user = UserController.to.user;
@@ -59,11 +54,18 @@ class EditProfile extends GetView<AuthController> {
                   ),
                   child: Column(
                     children: [
-                      Obx(() => ImagePreview(
-                            isEdit: true,
-                            callbackShowImage: controller.showImageGallery,
-                            imgUrl: controller.imgUrl ?? _user.image,
-                          )),
+                      if (controller.imgFile != null)
+                        Obx(() => ImagePreview(
+                              isEdit: true,
+                              callbackShowImage: controller.showImageGallery,
+                              fileUrl: controller.imgUrl,
+                            ))
+                      else
+                        ImagePreview(
+                          isEdit: true,
+                          callbackShowImage: controller.showImageGallery,
+                          imgUrl: _user.image,
+                        ),
                       // Profile(
                       //   imagePath: _user.image,
                       //   isEdit: true,
@@ -155,6 +157,8 @@ class EditProfile extends GetView<AuthController> {
                                 phone: phoneController.text,
                                 about: sobremimController.text,
                               );
+                              controller.imgFile = null;
+                              //print('File: ${controller.imgFile.path}');
                               Get.back();
                             },
                             bgColor: Get.isDarkMode

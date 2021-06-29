@@ -57,9 +57,10 @@ class DialogTextEditDelete extends GetView<TextComposerController> {
                                         OutlinedButton.icon(
                                           onPressed: () {
                                             controller.editSubmitted(
-                                                data['id'] as String,
-                                                textController.text,
-                                                data['idRoom'] as String);
+                                                idMessage: data['id'] as String,
+                                                message: textController.text,
+                                                idRoom:
+                                                    data['idRoom'] as String);
                                             _reset();
                                             Get.back();
                                           },
@@ -106,7 +107,8 @@ class DialogTextEditDelete extends GetView<TextComposerController> {
         child: Padding(
           padding: const EdgeInsets.all(2),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment:
+                mine ? CrossAxisAlignment.start : CrossAxisAlignment.end,
             children: [
               if (mine)
                 Text(

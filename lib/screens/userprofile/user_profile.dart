@@ -12,8 +12,12 @@ import 'package:rolagem_dados/widget/userprofile/rating_followers.dart';
 
 class UserProfile extends GetView<AuthController> {
   final _user = UserController.to.user;
+
   @override
   Widget build(BuildContext context) {
+    controller.numberOfFriends();
+    controller.numberOfRooms();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -46,7 +50,8 @@ class UserProfile extends GetView<AuthController> {
           const SizedBox(height: 24),
           buildName(_user),
           const SizedBox(height: 24),
-          RatingFollowers(),
+          Obx(() => RatingFollowers(
+              friends: controller.myFriends, rooms: controller.myRooms)),
           const SizedBox(height: 48),
           buildAbout(_user),
         ],

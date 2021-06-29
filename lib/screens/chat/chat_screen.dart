@@ -1,29 +1,27 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:get/get.dart';
-import 'package:getwidget/components/progress_bar/gf_progress_bar.dart';
 import 'package:rolagem_dados/controllers/chat_screen_controller.dart';
 import 'package:rolagem_dados/controllers/text_composer_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/screens/chat/chat_message.dart';
 import 'package:rolagem_dados/services/data_base.dart';
-import 'package:rolagem_dados/widget/addfriend/dialog_add_friend.dart';
 import 'package:rolagem_dados/widget/my_search_field.dart';
+import 'package:rolagem_dados/widget/search_chat_result_list%20.dart';
 import 'package:rolagem_dados/widget/search_result_list.dart';
 
 import 'text_composer.dart';
 
 class ChatScreen extends GetView<ChatScreenController> {
-  ChatScreen();
   final TextEditingController _textController = TextEditingController();
   final TextEditingController _seachController = TextEditingController();
 
   final TextComposerController _composerController =
       Get.put(TextComposerController(Database()));
-  final RoomModel _room = Get.arguments as RoomModel;
+
+  RoomModel room = Get.arguments as RoomModel;
 
   @override
   Widget build(BuildContext context) {
@@ -47,30 +45,40 @@ class ChatScreen extends GetView<ChatScreenController> {
           child: Scaffold(
             appBar: AppBar(
               actions: [
-                Obx(() => IconButton(
-                    icon: controller.showSearch != true
-                        ? const Icon(Icons.group_add)
-                        : const Icon(Icons.close),
-                    onPressed: () {
-                      controller.showSearch = !controller.showSearch;
-                    }))
+                Obx(() => room.admUserId == UserController.to.user.id
+                    ? IconButton(
+                        icon: controller.showSearch != true
+                            ? const Icon(Icons.group_add)
+                            : const Icon(Icons.close),
+                        onPressed: () {
+                          controller.showSearch = !controller.showSearch;
+                        })
+                    : Container())
               ],
-              toolbarHeight: 75,
+              toolbarHeight: 60,
               brightness: Brightness.dark,
               backgroundColor: Colors.transparent,
-              title: Obx(() => controller.showSearch != true
-                  ? Text(_room.name)
-                  : MySearchField(
-                      theme: Get.isDarkMode,
-                      controller: _seachController,
-                      onChanged: (text) {
-                        controller.isEmpty = text.isNotEmpty;
-                      },
-                      onSubmited: (text) {
-                        controller.loadFriends(text);
-                      },
-                      showButton: controller.isEmpty,
-                      voidCallback: _seachFriend,
+              title: Obx(() => controller.showSearch != false
+                  ? SizedBox(
+                      height: 45,
+                      child: MySearchField(
+                        theme: Get.isDarkMode,
+                        controller: _seachController,
+                        onChanged: (text) {
+                          controller.isEmpty = text.isNotEmpty;
+                        },
+                        onSubmited: (text) {
+                          controller.loadFriends(text);
+                        },
+                        showButton: controller.isEmpty,
+                        voidCallback: _seachFriend,
+                      ),
+                    )
+                  : ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(room.imgUrl),
+                      ),
+                      title: Text(room.name),
                     )),
               centerTitle: true,
               elevation: 0,
@@ -104,7 +112,7 @@ class ChatScreen extends GetView<ChatScreenController> {
                         },
                       ),
                     ),
-                    SizedBox(height: 55),
+                    const SizedBox(height: 55),
                   ],
                 ),
                 Obx(
@@ -113,78 +121,23 @@ class ChatScreen extends GetView<ChatScreenController> {
                           child: ListView.builder(
                               itemCount: controller.userFriend.length,
                               itemBuilder: (context, index) {
-                                return SearchResultList(
+                                return SearchChatResultList(
                                   user: controller.userFriend[index],
                                   onPressed: () =>
                                       controller.userFriend.clear(),
                                   voidCallback: () {
                                     controller.addFriendRoom(
-                                        controller.userFriend[index].id,
-                                        _room.id);
+                                        controller.userFriend[index], room.id);
+                                    // _composerController.handleSubmitted(
+                                    //     text:
+                                    //         '${controller.userFriend[index].name} entrou na sala',
+                                    //     room: room);
                                   },
                                   voidCallbackReload: () {
                                     controller.userFriend.clear();
                                     controller.showSearch = false;
                                   },
                                 );
-                                // return Container(
-                                //   margin: const EdgeInsets.only(
-                                //       top: 5, left: 40, right: 40),
-                                //   decoration: BoxDecoration(
-                                //       borderRadius: BorderRadius.circular(50),
-                                //       color: Colors.white),
-                                //   child: ListTile(
-                                //         onTap: () {
-                                //           showDialog(
-                                //               context: context,
-                                //               builder: (context) {
-                                //                 return DialogAddFriend(
-                                //                   user: controller
-                                //                       .userFriend[index],
-                                //                   voidCallback: () {
-                                //                     controller.addFriendRoom(
-                                //                         controller
-                                //                             .userFriend[index]
-                                //                             .id,
-                                //                         _room.id);
-                                //                   },
-                                //                   voidCallbackReload: () {
-                                //                     controller.userFriend
-                                //                         .clear();
-                                //                     controller.showSearch =
-                                //                         false;
-                                //                   },
-                                //                 );
-                                //               });
-                                //         },
-                                //         leading: CircleAvatar(
-                                //             backgroundImage: NetworkImage(
-                                //           controller.userFriend[index].image,
-                                //         )),
-                                //         title: Text(
-                                //           controller.userFriend[index].name,
-                                //           style: const TextStyle(
-                                //               color: Colors.black),
-                                //         ),
-                                //         subtitle: Text(
-                                //           controller.userFriend[index].id,
-                                //           style: const TextStyle(
-                                //               color: Colors.black),
-                                //         ),
-                                //         trailing: IconButton(
-                                //           onPressed: () {
-                                //             controller.userFriend.clear();
-                                //           },
-                                //           icon: const Icon(
-                                //             Icons.close,
-                                //             color: Colors.black,
-                                //           ),
-                                //         ),
-                                //         autofocus: true,
-                                //         dense: true,
-                                //       ) ??
-                                //       const CircularProgressIndicator(),
-                                // );
                               }),
                         )
                       : Container(),
@@ -222,7 +175,7 @@ class ChatScreen extends GetView<ChatScreenController> {
                             color: Get.isDarkMode
                                 ? Colors.white
                                 : Colors.grey.shade300),
-                        child: TextComposer(_room),
+                        child: TextComposer(room),
                       ),
                     ],
                   ),

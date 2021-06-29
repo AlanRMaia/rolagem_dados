@@ -73,13 +73,13 @@ class ChatMessage extends GetView<TextComposerController> {
                           ),
                           padding: const EdgeInsets.all(5),
                           child: data['fileUrl'] != null
-                              ? DialogImageDelete(mine, data: data)
+                              ? DialogImageDelete(mine: mine, data: data)
                               : DialogTextEditDelete(
                                   !mine,
                                   textController: _textController,
                                   data: data,
                                 )),
-                      Container()
+                      Container(),
                     ],
                   ),
                 ),

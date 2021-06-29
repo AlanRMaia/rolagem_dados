@@ -39,8 +39,8 @@ class MySearchField extends StatelessWidget {
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.all(20),
-                hintText: 'Digite o nome do amigo',
+                contentPadding: const EdgeInsets.all(10),
+                hintText: 'Digite o email do amigo',
                 hintStyle: kBodyText,
                 enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(

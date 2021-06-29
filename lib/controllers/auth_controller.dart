@@ -21,6 +21,12 @@ class AuthController extends GetxController {
   final _isDarkMode = true.obs;
   File _imgFile;
   final RxString _imgUrl = ''.obs;
+  final _myRooms = 0.obs;
+  final _myFriends = 0.obs;
+
+  final _myRoomsFriend = 0.obs;
+  final _myFriendsFriend = 0.obs;
+
   final picker = ImagePicker();
 
   File get imgFile => _imgFile;
@@ -47,11 +53,24 @@ class AuthController extends GetxController {
     _isDarkMode.value = value;
   }
 
+  int get myRooms => _myRooms.value;
+  set myRooms(int value) => _myRooms.value = value;
+
+  int get myFriends => _myFriends.value;
+  set myFriends(int value) => _myFriends.value = value;
+
+  int get myRoomsFriend => _myRoomsFriend.value;
+  set myRoomsFriend(int value) => _myRoomsFriend.value = value;
+
+  int get myFriendsFriend => _myFriendsFriend.value;
+  set myFriendsFriend(int value) => _myFriendsFriend.value = value;
+
   FirebaseUser get user => _firebaseUser.value;
 
   @override
-  void onInit() async {
+  void onInit() {
     _firebaseUser.bindStream(_auth.onAuthStateChanged);
+    super.onInit();
   }
 
   Future<void> createUser(String name, String email, String password,
@@ -70,6 +89,7 @@ class AuthController extends GetxController {
 
       final UserModel _user = UserModel(
         id: _authResult.user.uid,
+        about: '',
         name: name,
         email: email,
         phone: phone,
@@ -117,10 +137,10 @@ class AuthController extends GetxController {
         name: name,
         email: email,
         phone: phone,
-        image: imgUrl,
+        image: UserController.to.user.image,
         about: about,
       );
-      await _database.editUser(_user, _imgFile, imgUrl);
+      await _database.editUser(_user, imgFile);
     } catch (e) {
       rethrow;
     }
@@ -170,6 +190,42 @@ class AuthController extends GetxController {
     }
   }
 
+  Future<void> numberOfRooms() async {
+    try {
+      myRooms = await _database.numberOfRooms();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> numberOfFriends() async {
+    try {
+      myFriends = await _database.numberOfFriends();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> numberOfRoomsFriend(UserModel user) async {
+    try {
+      myRoomsFriend = await _database.numberOfRoomsFriend(user);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> numberOfFriendsFriend(UserModel user) async {
+    try {
+      myFriendsFriend = await _database.numberOfFriendsFriend(user);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
   Future<void> showImage() async {
     final pickerfile = await picker.getImage(source: ImageSource.camera);
     _imgFile = File(pickerfile?.path);
@@ -180,7 +236,7 @@ class AuthController extends GetxController {
 
   Future<void> showImageGallery() async {
     final pickerfile = await picker.getImage(source: ImageSource.gallery);
-    _imgFile = File(pickerfile?.path);
+    _imgFile = File(pickerfile.path);
     if (pickerfile != null) {
       imgUrl = pickerfile.path;
     }

@@ -21,6 +21,7 @@ class TextComposerController extends GetxController {
   final _isComposing = false.obs;
   final _isLoading = false.obs;
   final _isLoadingPhoto = false.obs;
+  final _isRecomend = false.obs;
   final _imgDados = 'assets/images/noun_D20_2453700.png'.obs;
   final ReceivePort _receivePort = ReceivePort();
 
@@ -39,6 +40,9 @@ class TextComposerController extends GetxController {
 
   set isLoadingPhoto(bool value) => _isLoadingPhoto.value = value;
   bool get isLoadingPhoto => _isLoadingPhoto.value;
+
+  set isRecomend(bool value) => _isRecomend.value = value;
+  bool get isRecomend => _isRecomend.value;
 
   final _progress = 0.obs;
   set progress(int value) => _progress.value = value;
@@ -130,43 +134,55 @@ class TextComposerController extends GetxController {
       );
 
       isLoading = false;
-      isLoading
-          ? Get.snackbar(firebasefile?.name, firebasefile?.url,
-              icon: const SizedBox(
-                  height: 20, width: 20, child: CircularProgressIndicator()),
-              messageText: const Text(
-                'Downloading...',
-                style: TextStyle(
-                  fontSize: 15,
-                ),
-              ),
-              titleText: Text(
-                firebasefile?.name,
-                style:
-                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-              ),
-              maxWidth: 300,
-              snackPosition: SnackPosition.BOTTOM)
-          : Get.snackbar(firebasefile?.name, firebasefile?.url,
-              messageText: const Text(
-                'Download completo',
-                style: TextStyle(fontSize: 15),
-              ),
-              titleText: Text(
-                firebasefile?.name,
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              maxWidth: 300,
-              snackPosition: SnackPosition.BOTTOM);
+      // isLoading
+      //     ? Get.snackbar(firebasefile?.name, firebasefile?.url,
+      //         icon: const SizedBox(
+      //             height: 20, width: 20, child: CircularProgressIndicator()),
+      //         messageText: const Text(
+      //           'Downloading...',
+      //           style: TextStyle(
+      //             fontSize: 15,
+      //           ),
+      //         ),
+      //         titleText: Text(
+      //           firebasefile?.name,
+      //           style:
+      //               const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+      //         ),
+      //         maxWidth: 300,
+      //         snackPosition: SnackPosition.BOTTOM)
+      //     : Get.snackbar(firebasefile?.name, firebasefile?.url,
+      //         messageText: const Text(
+      //           'Download completo',
+      //           style: TextStyle(fontSize: 15),
+      //         ),
+      //         titleText: Text(
+      //           firebasefile?.name,
+      //           style: const TextStyle(
+      //             fontSize: 10,
+      //             fontWeight: FontWeight.bold,
+      //           ),
+      //         ),
+      //         maxWidth: 300,
+      //         snackPosition: SnackPosition.BOTTOM);
     }
   }
 
   Future<void> editSubmitted(
-      String idMessage, String message, String idRoom) async {
-    await _database.editSubmitted(idMessage, message, idRoom);
+      {String idMessage, String message, String idRoom, int recomend}) async {
+    var valorRecomend = recomend;
+    if (recomend != null) {
+      if (isRecomend != false) {
+        valorRecomend++;
+      } else {
+        valorRecomend--;
+      }
+    }
+    await _database.editSubmitted(
+        idMessage: idMessage,
+        message: message,
+        idRoom: idRoom,
+        recomend: valorRecomend);
   }
 
   Future<void> deleteSubmited(String idMessage, String idRoom) async {
@@ -211,13 +227,14 @@ class TextComposerController extends GetxController {
       //await pr.show();
 
       final status = await Permission.storage.request();
-      final dir = await p.getExternalStorageDirectory();
+      final dir = await p.getExternalStorageDirectories(
+          type: p.StorageDirectory.downloads);
       isLoading = true;
 
       if (status.isGranted) {
         final id = await FlutterDownloader.enqueue(
           url: urlPath,
-          savedDir: dir.path,
+          savedDir: dir.last.path,
           fileName: basename(fileName),
           showNotification: true,
           openFileFromNotification: true,
@@ -239,7 +256,7 @@ class TextComposerController extends GetxController {
       isLoading
           ? Get.snackbar(
               basename(fileName),
-              dir.path,
+              dir.toString(),
               icon: const SizedBox(
                   height: 20, width: 20, child: CircularProgressIndicator()),
               messageText: const Text(
@@ -257,7 +274,7 @@ class TextComposerController extends GetxController {
             )
           : Get.snackbar(
               basename(fileName),
-              dir.path,
+              dir.toString(),
               messageText: const Text(
                 'Download completo',
                 style: TextStyle(fontSize: 15),

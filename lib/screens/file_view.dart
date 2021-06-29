@@ -3,9 +3,9 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:get/get.dart';
 
 class FileView extends StatelessWidget {
+  final Map<String, dynamic> data = Get.arguments as Map<String, dynamic>;
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> data = Get.arguments as Map<String, dynamic>;
     print(data['fileUrl']);
     return SafeArea(
       top: false,
@@ -20,7 +20,7 @@ class FileView extends StatelessWidget {
           ),
           title: Text(data['fileName'].toString()),
         ),
-        body: data['type'] != null
+        body: data['type'] != 'image'
             ? PDFView(
                 filePath: data['fileUrl'].toString(),
               )

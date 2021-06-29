@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class RatingFollowers extends StatelessWidget {
+import 'package:rolagem_dados/controllers/auth_controller.dart';
+
+class RatingFollowers extends GetView<AuthController> {
+  final int friends;
+  final int rooms;
+  const RatingFollowers({
+    @required this.friends,
+    @required this.rooms,
+  });
   @override
-  Widget build(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          buildButton(context, '4.8', 'Ranking'),
-          buildDivider(),
-          buildButton(context, '35', 'Seguindo'),
-          buildDivider(),
-          buildButton(context, '50', 'Seguidores'),
-        ],
-      );
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        buildButton(context, '4.8', 'Curtidas'),
+        buildDivider(),
+        buildButton(context, friends.toString(), 'Amigos'),
+        buildDivider(),
+        buildButton(context, rooms.toString(), 'Salas'),
+      ],
+    );
+  }
+
   Widget buildDivider() => const SizedBox(
         height: 24,
         child: VerticalDivider(),
@@ -24,7 +36,6 @@ class RatingFollowers extends StatelessWidget {
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Text(
               value,
