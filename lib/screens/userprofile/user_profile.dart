@@ -11,15 +11,16 @@ import 'package:rolagem_dados/widget/userprofile/profile.dart';
 import 'package:rolagem_dados/widget/userprofile/rating_followers.dart';
 
 class UserProfile extends GetView<AuthController> {
-  final _user = UserController.to.user;
-
   @override
   Widget build(BuildContext context) {
+    final _user = UserController.to.user;
+
     controller.numberOfFriends();
     controller.numberOfRooms();
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [

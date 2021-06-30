@@ -119,6 +119,7 @@ class TextComposer extends StatelessWidget {
                 borderRadius: BorderRadius.circular(40),
               ),
               child: TextField(
+                style: const TextStyle(color: Colors.grey),
                 controller: _textController,
                 decoration: InputDecoration(
                     hintText: 'Enviar uma mensagem',

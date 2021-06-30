@@ -3,13 +3,18 @@ import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/constants.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
+import 'package:rolagem_dados/utils/validators.dart';
+import 'package:rolagem_dados/widget/Image_avatar.dart';
 import 'package:rolagem_dados/widget/Image_avatar_preview.dart';
 import 'package:rolagem_dados/widget/my_password_field.dart';
 import 'package:rolagem_dados/widget/my_text_button.dart';
 import 'package:rolagem_dados/widget/my_text_field.dart';
+import 'package:rolagem_dados/widget/signup/image_inicial.dart';
 import 'package:rolagem_dados/widget/signup/image_preview.dart';
+import 'package:validatorless/validatorless.dart';
 
 class SignUp extends GetWidget<AuthController> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -29,10 +34,10 @@ class SignUp extends GetWidget<AuthController> {
             controller.isLoading = false;
             controller.imgUrl = '';
           },
-          icon: const Image(
+          icon: Image(
             width: 24,
-            color: Colors.white,
-            image: Svg('assets/images/back_arrow.svg'),
+            image: const Svg('assets/images/back_arrow.svg'),
+            color: Get.isDarkMode ? Colors.white : Colors.black87,
           ),
         ),
       ),
@@ -49,11 +54,15 @@ class SignUp extends GetWidget<AuthController> {
                   ),
                   child: Column(
                     children: [
-                      Obx(() => ImagePreview(
-                            isEdit: true,
-                            callbackShowImage: controller.showImageGallery,
-                            fileUrl: controller.imgUrl,
-                          )),
+                      Obx(() => controller.imgUrl == ''
+                          ? ImageInicial(
+                              callbackShowImage: controller.showImageGallery,
+                            )
+                          : ImagePreview(
+                              isEdit: true,
+                              callbackShowImage: controller.showImageGallery,
+                              fileUrl: controller.imgUrl,
+                            )),
                       // OutlinedButton.icon(
                       //   style: ElevatedButton.styleFrom(
                       //     side: const BorderSide(color: Colors.grey),
@@ -72,51 +81,94 @@ class SignUp extends GetWidget<AuthController> {
                       //   onPressed: () => controller.showImageGallery(),
                       // ),
                       Flexible(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            MyTextField(
-                              borderColorFocus:
-                                  Get.isDarkMode ? Colors.white : Colors.black,
-                              controller: nameController,
-                              hintText: 'Nome',
-                              inputType: TextInputType.name,
-                            ),
-                            MyTextField(
-                              borderColorFocus:
-                                  Get.isDarkMode ? Colors.white : Colors.black,
-                              controller: emailController,
-                              hintText: 'Email',
-                              inputType: TextInputType.emailAddress,
-                            ),
-                            MyTextField(
-                              borderColorFocus:
-                                  Get.isDarkMode ? Colors.white : Colors.black,
-                              controller: phoneController,
-                              hintText: 'Telefone',
-                              inputType: TextInputType.phone,
-                            ),
-                            Expanded(
-                              child: Obx(
-                                () => MyPasswordField(
-                                  borderColorFocus: Get.isDarkMode
-                                      ? Colors.white
-                                      : Colors.black,
-                                  controller: passwordController,
-                                  onChanged: (value) {},
-                                  showPassword: controller.isPassWordVisible,
-                                  changeShowPassword: () {
-                                    controller.isPassWordVisible =
-                                        !controller.isPassWordVisible;
-                                  },
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              MyTextField(
+                                label: 'Nome',
+                                validator:
+                                    Validatorless.required('Nome obrigatório'),
+                                borderColorFocus: Get.isDarkMode
+                                    ? Colors.white
+                                    : Colors.black,
+                                controller: nameController,
+                                inputType: TextInputType.name,
+                              ),
+                              MyTextField(
+                                label: 'Email',
+                                validator: Validatorless.multiple([
+                                  Validatorless.required('Email obrigatório'),
+                                  Validatorless.email('E-mail inválido'),
+                                ]),
+                                borderColorFocus: Get.isDarkMode
+                                    ? Colors.white
+                                    : Colors.black,
+                                controller: emailController,
+                                inputType: TextInputType.emailAddress,
+                              ),
+                              MyTextField(
+                                label: 'Telefone',
+                                validator: Validatorless.multiple([
+                                  Validatorless.max(
+                                      11, 'Número máximo de 11 digitos'),
+                                  Validatorless.required(
+                                      'Número de telefone obrigatório'),
+                                ]),
+                                borderColorFocus: Get.isDarkMode
+                                    ? Colors.white
+                                    : Colors.black,
+                                controller: phoneController,
+                                inputType: TextInputType.phone,
+                              ),
+                              Expanded(
+                                child: Obx(
+                                  () => MyPasswordField(
+                                    label: 'Password',
+                                    validator: Validatorless.multiple([
+                                      Validatorless.required(
+                                          'senha obrigatória'),
+                                      Validatorless.min(
+                                          6, 'Necessário o mínimo de 6 digitos')
+                                    ]),
+                                    controller: passwordController,
+                                    onChanged: (value) {},
+                                    showPassword: controller.isPassWordVisible,
+                                    changeShowPassword: () {
+                                      controller.isPassWordVisible =
+                                          !controller.isPassWordVisible;
+                                    },
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 50)
-                          ],
+                              Expanded(
+                                child: Obx(
+                                  () => MyPasswordField(
+                                    label: 'Confirme Password',
+                                    validator: Validatorless.multiple([
+                                      Validatorless.required(
+                                          'senha obrigatória'),
+                                      Validatorless.min(6,
+                                          'Necessário o mínimo de 6 digitos'),
+                                      Validators.compare(passwordController,
+                                          'Senhas não conferem')
+                                    ]),
+                                    onChanged: (value) {},
+                                    showPassword: controller.isPassWordVisible,
+                                    changeShowPassword: () {
+                                      controller.isPassWordVisible =
+                                          !controller.isPassWordVisible;
+                                    },
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 50)
+                            ],
+                          ),
                         ),
                       ),
                       Padding(
@@ -147,13 +199,26 @@ class SignUp extends GetWidget<AuthController> {
                           buttonName: 'Cadastrar',
                           isLoading: controller.isLoading,
                           onTap: () {
-                            controller.createUser(
-                              nameController.text,
-                              emailController.text,
-                              passwordController.text,
-                              phoneController.text,
-                              controller.imgUrl,
-                            );
+                            final formValid =
+                                _formKey.currentState?.validate() ?? false;
+
+                            if (formValid) {
+                              controller.createUser(
+                                nameController.text
+                                    .trim()
+                                    .replaceAll("\\s+", " "),
+                                emailController.text
+                                    .trim()
+                                    .replaceAll("\\s+", " "),
+                                passwordController.text
+                                    .trim()
+                                    .replaceAll("\\s+", " "),
+                                phoneController.text
+                                    .trim()
+                                    .replaceAll("\\s+", " "),
+                                controller.imgUrl,
+                              );
+                            }
                           },
                           bgColor: Get.isDarkMode ? Colors.white : Colors.black,
                           textColor:

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-class ImageAvatarPreview extends StatelessWidget {
+class ImageAvatar extends StatelessWidget {
   final String assets;
   final File arquivo;
   final String imgUrl;
@@ -10,12 +10,12 @@ class ImageAvatarPreview extends StatelessWidget {
   final VoidCallback onClicked;
   final bool isEdit;
 
-  const ImageAvatarPreview(
+  const ImageAvatar(
       {Key key,
       this.arquivo,
       this.icon,
       this.onClicked,
-      this.isEdit,
+      this.isEdit = true,
       this.imgUrl,
       this.assets})
       : super(key: key);
@@ -28,14 +28,12 @@ class ImageAvatarPreview extends StatelessWidget {
       child: Center(
         child: Stack(
           children: [
-            SizedBox(
+            Container(
               width: 120,
               height: 120,
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
-                  child: arquivo != null
-                      ? Image.file(arquivo, fit: BoxFit.cover)
-                      : Image.network(imgUrl, fit: BoxFit.cover)),
+                  child: Image.asset('assets/images/user.png')),
             ),
             Positioned(
                 bottom: 0,

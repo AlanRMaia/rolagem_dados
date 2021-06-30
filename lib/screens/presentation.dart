@@ -93,13 +93,12 @@ class _PresentationState extends State<Presentation> {
                 ),
                 Expanded(
                   child: MyTextButton(
-                      buttonName: 'Acessar',
-                      onTap: () {
-                        Get.toNamed('/login');
-                      },
-                      bgColor: Colors.transparent,
-                      textColor:
-                          Get.isDarkMode ? Colors.white : Colors.black87),
+                    buttonName: 'Acessar',
+                    onTap: () {
+                      Get.toNamed('/login');
+                    },
+                    bgColor: Colors.transparent,
+                  ),
                 ),
               ],
             ),

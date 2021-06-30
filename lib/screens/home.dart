@@ -4,6 +4,8 @@ import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/home_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
+import 'package:rolagem_dados/screens/chat/chat_message.dart';
+import 'package:rolagem_dados/screens/chat/chat_screen.dart';
 import 'package:rolagem_dados/screens/presentation.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/widget/home/dialog_room_create.dart';

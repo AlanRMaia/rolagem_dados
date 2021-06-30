@@ -67,7 +67,7 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
               .document(room?.data['id'].toString())
               .get();
 
-          _rooms?.add(RoomModel?.fromDocumentSnapsho(roomDoc));
+          _rooms?.add(RoomModel?.fromMap(roomDoc?.data));
         }
         change(_rooms, status: RxStatus.success());
       });

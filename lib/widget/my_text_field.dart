@@ -5,9 +5,9 @@ import '../constants.dart';
 class MyTextField extends StatelessWidget {
   const MyTextField({
     Key key,
-    @required this.controller,
-    @required this.hintText,
-    @required this.inputType,
+    this.controller,
+    this.hintText,
+    this.inputType,
     this.textColor,
     this.onChaged,
     this.voidCallback,
@@ -17,6 +17,8 @@ class MyTextField extends StatelessWidget {
     this.isDarkMode,
     this.borderWdth = 1,
     this.borderColorFocus = Colors.white,
+    this.validator,
+    this.label,
   }) : super(key: key);
   final String hintText;
   final TextInputType inputType;
@@ -30,12 +32,15 @@ class MyTextField extends StatelessWidget {
   final bool isDarkMode;
   final Color borderColorFocus;
   final double borderWdth;
+  final String Function(String) validator;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
+        validator: validator,
         maxLines: maxLines,
         onChanged: onChaged,
         controller: controller,
@@ -43,6 +48,7 @@ class MyTextField extends StatelessWidget {
         keyboardType: inputType,
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
+          labelText: label,
           suffixIcon: suffixIcon,
           prefixIcon: prefixIcon,
           contentPadding: const EdgeInsets.all(20),

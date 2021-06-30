@@ -12,6 +12,8 @@ class MyPasswordField extends StatelessWidget {
     this.isDarkMode = true,
     this.borderColorFocus = Colors.white,
     this.borderWdth = 1,
+    this.label,
+    this.validator,
   }) : super(key: key);
 
   final ValueChanged<String> onChanged;
@@ -22,21 +24,23 @@ class MyPasswordField extends StatelessWidget {
   final bool isDarkMode;
   final Color borderColorFocus;
   final double borderWdth;
+  final String label;
+  final String Function(String) validator;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
-        style: kBodyText.copyWith(
-          color: Colors.white,
-        ),
+        validator: validator,
+        style: kBodyText.copyWith(),
         controller: controller,
         obscureText: !showPassword,
         onChanged: onChanged,
         keyboardType: TextInputType.text,
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
+          labelText: label,
           suffixIcon: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: IconButton(
@@ -50,7 +54,6 @@ class MyPasswordField extends StatelessWidget {
             ),
           ),
           contentPadding: const EdgeInsets.all(20),
-          hintText: 'Password',
           hintStyle: kBodyText,
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(

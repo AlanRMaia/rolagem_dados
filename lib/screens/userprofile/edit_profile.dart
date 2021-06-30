@@ -5,12 +5,13 @@ import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/widget/signup/image_preview.dart';
 import 'package:rolagem_dados/widget/theme/my_themes.dart';
 import 'package:rolagem_dados/widget/widget.dart';
+import 'package:validatorless/validatorless.dart';
 
 class EditProfile extends GetView<AuthController> {
-  final _user = UserController.to.user;
-
   @override
   Widget build(BuildContext context) {
+    final _user = UserController.to.user;
+
     final TextEditingController nameController =
         TextEditingController(text: _user.name);
     final TextEditingController emailController =
@@ -20,6 +21,7 @@ class EditProfile extends GetView<AuthController> {
         TextEditingController(text: _user.phone);
     final TextEditingController sobremimController =
         TextEditingController(text: _user.about);
+    final _formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(
@@ -52,122 +54,152 @@ class EditProfile extends GetView<AuthController> {
                   padding: const EdgeInsets.symmetric(
                     horizontal: 30,
                   ),
-                  child: Column(
-                    children: [
-                      if (controller.imgFile != null)
-                        Obx(() => ImagePreview(
-                              isEdit: true,
-                              callbackShowImage: controller.showImageGallery,
-                              fileUrl: controller.imgUrl,
-                            ))
-                      else
-                        ImagePreview(
-                          isEdit: true,
-                          callbackShowImage: controller.showImageGallery,
-                          imgUrl: _user.image,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        if (controller.imgFile != null)
+                          Obx(() => ImagePreview(
+                                isEdit: true,
+                                callbackShowImage: controller.showImageGallery,
+                                fileUrl: controller.imgUrl,
+                              ))
+                        else
+                          ImagePreview(
+                            isEdit: true,
+                            callbackShowImage: controller.showImageGallery,
+                            imgUrl: _user.image,
+                          ),
+                        // Profile(
+                        //   imagePath: _user.image,
+                        //   isEdit: true,
+                        //   onClicked: () async {
+                        //     await controller.showImageGallery();
+                        //     _user.image = controller.imgUrl;
+                        //   },
+                        // ),
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              // const Text(
+                              //   'Nome completo',
+                              //   style: TextStyle(
+                              //       fontWeight: FontWeight.bold, fontSize: 16),
+                              // ),
+                              const SizedBox(height: 2),
+                              MyTextField(
+                                label: 'Nome',
+                                validator: Validatorless.required(
+                                    'Nome é obrigatório'),
+                                borderColorFocus: Get.isDarkMode
+                                    ? MyThemes.darkTheme.colorScheme.primary
+                                    : MyThemes.lightTheme.colorScheme.primary,
+                                controller: nameController,
+                                inputType: TextInputType.name,
+                              ),
+                              const SizedBox(height: 4),
+                              // const Text(
+                              //   'Email',
+                              //   style: TextStyle(
+                              //       fontWeight: FontWeight.bold, fontSize: 16),
+                              // ),
+                              const SizedBox(height: 2),
+                              MyTextField(
+                                label: 'Email',
+                                validator: Validatorless.multiple([
+                                  Validatorless.email('Email inválido'),
+                                  Validatorless.required('Email obrigatório')
+                                ]),
+                                borderColorFocus: Get.isDarkMode
+                                    ? MyThemes.darkTheme.colorScheme.primary
+                                    : MyThemes.lightTheme.colorScheme.primary,
+                                controller: emailController,
+                                inputType: TextInputType.emailAddress,
+                              ),
+                              const SizedBox(height: 4),
+                              // const Text(
+                              //   'Telefone',
+                              //   style: TextStyle(
+                              //       fontWeight: FontWeight.bold, fontSize: 16),
+                              // ),
+                              const SizedBox(height: 2),
+                              MyTextField(
+                                validator: Validatorless.multiple([
+                                  Validatorless.required(
+                                      'Telefone é obrigatório'),
+                                  Validatorless.max(11,
+                                      'Numero máximo permitido é de 11 digitos')
+                                ]),
+                                label: 'Telefone',
+                                borderColorFocus: Get.isDarkMode
+                                    ? MyThemes.darkTheme.colorScheme.primary
+                                    : MyThemes.lightTheme.colorScheme.primary,
+                                controller: phoneController,
+                                inputType: TextInputType.phone,
+                              ),
+                              const SizedBox(height: 4),
+                              // const Text(
+                              //   'Sobre mim',
+                              //   style: TextStyle(
+                              //       fontWeight: FontWeight.bold, fontSize: 16),
+                              // ),
+                              const SizedBox(height: 2),
+                              MyTextField(
+                                label: 'Sobre mim',
+                                borderColorFocus: Get.isDarkMode
+                                    ? MyThemes.darkTheme.colorScheme.primary
+                                    : MyThemes.lightTheme.colorScheme.primary,
+                                maxLines: 5,
+                                controller: sobremimController,
+                                hintText: 'Descreva a sua biografia',
+                                inputType: TextInputType.multiline,
+                              ),
+                              const SizedBox(height: 50)
+                            ],
+                          ),
                         ),
-                      // Profile(
-                      //   imagePath: _user.image,
-                      //   isEdit: true,
-                      //   onClicked: () async {
-                      //     await controller.showImageGallery();
-                      //     _user.image = controller.imgUrl;
-                      //   },
-                      // ),
-                      Flexible(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            const Text(
-                              'Nome completo',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                            const SizedBox(height: 2),
-                            MyTextField(
-                              borderColorFocus: Get.isDarkMode
+
+                        Obx(
+                          () => MyTextButton(
+                              buttonName: 'Salvar',
+                              isLoading: controller.isLoading,
+                              onTap: () {
+                                final formValidator =
+                                    _formKey.currentState.validate() ?? false;
+
+                                if (formValidator) {
+                                  controller.editUser(
+                                    uid: _user.id,
+                                    name: nameController.text
+                                        .trim()
+                                        .replaceAll("\\s+", " "),
+                                    email: emailController.text
+                                        .trim()
+                                        .replaceAll("\\s+", " "),
+                                    phone: phoneController.text
+                                        .trim()
+                                        .replaceAll("\\s+", " "),
+                                    about: sobremimController.text
+                                        .trim()
+                                        .replaceAll("\\s+", " "),
+                                  );
+                                  Get.back();
+                                  controller.imgFile = null;
+                                }
+                                //print('File: ${controller.imgFile.path}');
+                              },
+                              bgColor: Get.isDarkMode
                                   ? MyThemes.darkTheme.colorScheme.primary
                                   : MyThemes.lightTheme.colorScheme.primary,
-                              controller: nameController,
-                              hintText: 'Nome',
-                              inputType: TextInputType.name,
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'Email',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                            const SizedBox(height: 2),
-                            MyTextField(
-                              borderColorFocus: Get.isDarkMode
-                                  ? MyThemes.darkTheme.colorScheme.primary
-                                  : MyThemes.lightTheme.colorScheme.primary,
-                              controller: emailController,
-                              hintText: 'Email',
-                              inputType: TextInputType.emailAddress,
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'Telefone',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                            const SizedBox(height: 2),
-                            MyTextField(
-                              borderColorFocus: Get.isDarkMode
-                                  ? MyThemes.darkTheme.colorScheme.primary
-                                  : MyThemes.lightTheme.colorScheme.primary,
-                              controller: phoneController,
-                              hintText: 'Telefone',
-                              inputType: TextInputType.phone,
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'Sobre mim',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                            const SizedBox(height: 2),
-                            MyTextField(
-                              borderColorFocus: Get.isDarkMode
-                                  ? MyThemes.darkTheme.colorScheme.primary
-                                  : MyThemes.lightTheme.colorScheme.primary,
-                              maxLines: 5,
-                              controller: sobremimController,
-                              hintText: 'Descreva a sua biografia',
-                              inputType: TextInputType.multiline,
-                            ),
-                            const SizedBox(height: 50)
-                          ],
+                              textColor: Colors.white),
                         ),
-                      ),
-                      Obx(
-                        () => MyTextButton(
-                            buttonName: 'Salvar',
-                            isLoading: controller.isLoading,
-                            onTap: () {
-                              controller.editUser(
-                                uid: _user.id,
-                                name: nameController.text,
-                                email: emailController.text,
-                                phone: phoneController.text,
-                                about: sobremimController.text,
-                              );
-                              controller.imgFile = null;
-                              //print('File: ${controller.imgFile.path}');
-                              Get.back();
-                            },
-                            bgColor: Get.isDarkMode
-                                ? MyThemes.darkTheme.colorScheme.primary
-                                : MyThemes.lightTheme.colorScheme.primary,
-                            textColor: Colors.white),
-                      ),
-                      const SizedBox(height: 10)
-                    ],
+                        const SizedBox(height: 10)
+                      ],
+                    ),
                   ),
                 ),
               ),

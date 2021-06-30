@@ -12,6 +12,7 @@ class MyTextButton extends StatelessWidget {
     this.bgColor,
     this.textColor,
     this.isLoading = false,
+    this.loadingColor,
   }) : super(key: key);
 
   final String buttonName;
@@ -19,6 +20,7 @@ class MyTextButton extends StatelessWidget {
   final Color bgColor;
   final Color textColor;
   final bool isLoading;
+  final Color loadingColor;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,7 @@ class MyTextButton extends StatelessWidget {
                   padding: const EdgeInsets.all(5),
                   child: Loading(
                     indicator: BallSpinFadeLoaderIndicator(),
-                    color: Colors.black87,
+                    color: loadingColor,
                     size: 40,
                   ),
                 ),

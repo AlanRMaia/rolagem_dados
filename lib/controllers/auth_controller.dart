@@ -90,6 +90,7 @@ class AuthController extends GetxController {
       final UserModel _user = UserModel(
         id: _authResult.user.uid,
         about: '',
+        isDarkMode: true,
         name: name,
         email: email,
         phone: phone,
