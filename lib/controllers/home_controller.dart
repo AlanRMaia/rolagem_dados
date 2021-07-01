@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 
@@ -11,6 +12,13 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
   final Firestore _firestore = Firestore.instance;
 
   HomeController(this._database);
+
+  @override
+  void onInit() {
+    loadRooms(UserController.to.user.id);
+
+    super.onInit();
+  }
 
   final picker = ImagePicker();
   File _imgFile;

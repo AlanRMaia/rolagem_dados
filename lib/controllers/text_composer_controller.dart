@@ -253,41 +253,41 @@ class TextComposerController extends GetxController {
       // print(file.path);
       //pr.hide();
       isLoading = false;
-      isLoading
-          ? Get.snackbar(
-              basename(fileName),
-              dir.toString(),
-              icon: const SizedBox(
-                  height: 20, width: 20, child: CircularProgressIndicator()),
-              messageText: const Text(
-                'Downloading...',
-                style: TextStyle(
-                  fontSize: 15,
-                ),
-              ),
-              titleText: Text(
-                basename(fileName),
-                style:
-                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-              ),
-              maxWidth: 300,
-            )
-          : Get.snackbar(
-              basename(fileName),
-              dir.toString(),
-              messageText: const Text(
-                'Download completo',
-                style: TextStyle(fontSize: 15),
-              ),
-              titleText: Text(
-                basename(fileName),
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              maxWidth: 300,
-            );
+      // isLoading
+      //     ? Get.snackbar(
+      //         basename(fileName),
+      //         dir.toString(),
+      //         icon: const SizedBox(
+      //             height: 20, width: 20, child: CircularProgressIndicator()),
+      //         messageText: const Text(
+      //           'Downloading...',
+      //           style: TextStyle(
+      //             fontSize: 15,
+      //           ),
+      //         ),
+      //         titleText: Text(
+      //           basename(fileName),
+      //           style:
+      //               const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+      //         ),
+      //         maxWidth: 300,
+      //       )
+      //     : Get.snackbar(
+      //         basename(fileName),
+      //         dir.toString(),
+      //         messageText: const Text(
+      //           'Download completo',
+      //           style: TextStyle(fontSize: 15),
+      //         ),
+      //         titleText: Text(
+      //           basename(fileName),
+      //           style: const TextStyle(
+      //             fontSize: 10,
+      //             fontWeight: FontWeight.bold,
+      //           ),
+      //         ),
+      //         maxWidth: 300,
+      //       );
     } catch (e) {
       print(e);
     }

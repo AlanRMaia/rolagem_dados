@@ -39,23 +39,29 @@ class UserProfile extends GetView<AuthController> {
           )
         ],
       ),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          Profile(
-            imagePath: _user.image,
-            onClicked: () {
-              Get.to(() => EditProfile());
-            },
-          ),
-          const SizedBox(height: 24),
-          buildName(_user),
-          const SizedBox(height: 24),
-          Obx(() => RatingFollowers(
-              friends: controller.myFriends, rooms: controller.myRooms)),
-          const SizedBox(height: 48),
-          buildAbout(_user),
-        ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await controller.numberOfFriends();
+          await controller.numberOfRooms();
+        },
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          children: [
+            Profile(
+              imagePath: _user.image,
+              onClicked: () {
+                Get.to(() => EditProfile());
+              },
+            ),
+            const SizedBox(height: 24),
+            buildName(_user),
+            const SizedBox(height: 24),
+            Obx(() => RatingFollowers(
+                friends: controller.myFriends, rooms: controller.myRooms)),
+            const SizedBox(height: 48),
+            buildAbout(_user),
+          ],
+        ),
       ),
     );
   }

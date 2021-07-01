@@ -11,12 +11,14 @@ import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/widget/home/dialog_room_create.dart';
 import 'package:rolagem_dados/widget/homePage/dialog_exit_room.dart';
 
-class Home extends GetWidget<AuthController> {
+class Home extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
   final HomeController _homeController = Get.put(HomeController(Database()));
-
+  final AuthController controller = Get.put(AuthController(UserController()));
   @override
   Widget build(BuildContext context) {
+    _homeController.loadRooms(UserController.to.user.id);
+
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.dark,
@@ -33,7 +35,6 @@ class Home extends GetWidget<AuthController> {
             Get.find<UserController>().user =
                 await Database().getUser(controller.user.uid);
             await controller.numberOfRooms();
-            _homeController.loadRooms(UserController.to.user.id);
             await controller.numberOfFriends();
           },
           builder: (_) {
@@ -69,30 +70,35 @@ class Home extends GetWidget<AuthController> {
             children: [
               Expanded(
                 child: _homeController.obx(
-                  (state) => ListView.builder(
-                      itemCount: state.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          child: ListTile(
-                            onLongPress: () => showDialog(
-                              context: context,
-                              builder: (context) => DialogExitRoom(
-                                room: state[index],
-                                user: UserController.to.user,
+                  (state) => RefreshIndicator(
+                    onRefresh: () async {
+                      _homeController.loadRooms(UserController.to.user.id);
+                    },
+                    child: ListView.builder(
+                        itemCount: state.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            child: ListTile(
+                              onLongPress: () => showDialog(
+                                context: context,
+                                builder: (context) => DialogExitRoom(
+                                  room: state[index],
+                                  user: UserController.to.user,
+                                ),
                               ),
+                              leading: CircleAvatar(
+                                backgroundImage:
+                                    NetworkImage(state[index].imgUrl),
+                              ),
+                              title: Text(state[index].name),
+                              subtitle: Text(state[index].admUserId),
+                              autofocus: true,
+                              onTap: () => Get.toNamed('/chatscreen',
+                                  arguments: state[index]),
                             ),
-                            leading: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(state[index].imgUrl),
-                            ),
-                            title: Text(state[index].name),
-                            subtitle: Text(state[index].admUserId),
-                            autofocus: true,
-                            onTap: () => Get.toNamed('/chatscreen',
-                                arguments: state[index]),
-                          ),
-                        );
-                      }),
+                          );
+                        }),
+                  ),
                 ),
               ),
             ],

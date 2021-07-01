@@ -107,7 +107,85 @@ class DialogImageDelete extends GetView<TextComposerController> {
                       );
                     });
               }
-            : null,
+            : () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Column(
+                        children: [
+                          Dialog(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: SizedBox(
+                                height: 150,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Center(
+                                      child: SizedBox(
+                                        width: 100,
+                                        height: 80,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          child: Image.network(
+                                            data['fileUrl'] as String,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        OutlinedButton.icon(
+                                          onPressed: () {
+                                            Get.back();
+                                          },
+                                          icon: const Icon(
+                                            Icons.delete_forever,
+                                            color: Colors.red,
+                                          ),
+                                          label: const Text(
+                                            'Cancelar',
+                                            style: TextStyle(
+                                                color: Colors.black87),
+                                          ),
+                                        ),
+                                        OutlinedButton.icon(
+                                            onPressed: () async {
+                                              await controller
+                                                  .documentsDownload(
+                                                      data['fileUrl']
+                                                          .toString(),
+                                                      data['fileName']
+                                                          .toString());
+                                              controller.isLoading = true;
+                                              Get.back();
+                                            },
+                                            icon: const Icon(
+                                              Icons.cancel_sharp,
+                                              color: Colors.black87,
+                                            ),
+                                            label: const Text(
+                                              'Download',
+                                              style: TextStyle(
+                                                color: Colors.black87,
+                                              ),
+                                            ))
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    });
+              },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [

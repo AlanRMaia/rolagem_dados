@@ -28,7 +28,7 @@ class AddFriend extends GetView<AuthController> {
     AddFriendController.to.addFriend(friendUser);
   }
 
-  void _reload() {
+  Future<void> _reload() async {
     AddFriendController.to.loadFriends();
   }
 
@@ -42,12 +42,13 @@ class AddFriend extends GetView<AuthController> {
           automaticallyImplyLeading: false,
           backgroundColor: Colors.transparent,
           elevation: 0,
-          toolbarHeight: 70,
+          toolbarHeight: 60,
           title: Container(
             margin: const EdgeInsets.fromLTRB(5, 20, 1, 14),
             child: Obx(
               () => SizedBox(
                 height: 50,
+                width: Get.width,
                 child: MySearchField(
                   theme: Get.isDarkMode,
                   voidCallback: _seachFriend,
@@ -69,32 +70,35 @@ class AddFriend extends GetView<AuthController> {
           children: [
             Padding(
               padding: const EdgeInsets.all(1),
-              child: AddFriendController.to.obx((state) => ListView.separated(
-                  separatorBuilder: (_, ___) => const Divider(),
-                  itemCount: state.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      onLongPress: () => showDialog(
-                        context: context,
-                        builder: (context) => DialogDeleteFriend(
-                          user: UserController.to.user,
-                          friend: state[index],
-                        ),
-                      ),
-                      onTap: () => Get.to(() => UserFriendProfile(),
-                          arguments: state[index]),
-                      dense: true,
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(state[index].image),
-                      ),
-                      title: Text(
-                        state[index].name,
-                      ),
-                      subtitle: Text(
-                        state[index].email,
-                      ),
-                    );
-                  })),
+              child: AddFriendController.to.obx((state) => RefreshIndicator(
+                    onRefresh: _reload,
+                    child: ListView.separated(
+                        separatorBuilder: (_, ___) => const Divider(),
+                        itemCount: state.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            onLongPress: () => showDialog(
+                              context: context,
+                              builder: (context) => DialogDeleteFriend(
+                                user: UserController.to.user,
+                                friend: state[index],
+                              ),
+                            ),
+                            onTap: () => Get.to(() => UserFriendProfile(),
+                                arguments: state[index]),
+                            dense: true,
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage(state[index].image),
+                            ),
+                            title: Text(
+                              state[index].name,
+                            ),
+                            subtitle: Text(
+                              state[index].email,
+                            ),
+                          );
+                        }),
+                  )),
             ),
             Obx(() => AddFriendController.to.resultFriends.isNotEmpty
                 ? SizedBox(
@@ -113,79 +117,8 @@ class AddFriend extends GetView<AuthController> {
                             },
                             voidCallbackReload: () {
                               _friendController.resultFriends.clear();
-                              _reload();
                             },
                           );
-                          // return Container(
-                          //   margin: const EdgeInsets.only(
-                          //       top: 5, left: 40, right: 40),
-                          //   decoration: BoxDecoration(
-                          //     borderRadius: BorderRadius.circular(50),
-                          //     color: Colors.white,
-                          //     boxShadow: [
-                          //       BoxShadow(
-                          //         color: Colors.grey.withOpacity(0.8),
-                          //         blurRadius: 4,
-                          //         spreadRadius: 1,
-                          //         offset: const Offset(
-                          //             7, 7), // shadow direction: bottom right
-                          //       )
-                          //     ],
-                          //   ),
-                          //   child: ListTile(
-                          //         onTap: () {
-                          //           showDialog(
-                          //               context: context,
-                          //               builder: (context) {
-                          //                 return DialogAddFriend(
-                          //                   data: AddFriendController
-                          //                       .to.resultFriends[index],
-                          //                   voidCallback: () {
-                          //                     _addFriend(AddFriendController
-                          //                         .to.resultFriends[index]);
-                          //                     AddFriendController
-                          //                         .to.resultFriends
-                          //                         .clear();
-                          //                   },
-                          //                   voidCallbackReload: () {
-                          //                     _friendController.resultFriends
-                          //                         .clear();
-                          //                     _reload();
-                          //                   },
-                          //                 );
-                          //               });
-                          //         },
-                          //         leading: CircleAvatar(
-                          //           backgroundImage: NetworkImage(
-                          //               AddFriendController
-                          //                   .to.resultFriends[index]['image']
-                          //                   .toString()),
-                          //         ),
-                          //         title: Text(
-                          //             AddFriendController
-                          //                 .to.resultFriends[index]['name']
-                          //                 .toString(),
-                          //             style:
-                          //                 const TextStyle(color: Colors.black)),
-                          //         subtitle: Text(
-                          //             AddFriendController
-                          //                 .to.resultFriends[index]['id']
-                          //                 .toString(),
-                          //             style:
-                          //                 const TextStyle(color: Colors.black)),
-                          //         trailing: IconButton(
-                          //           onPressed: () {
-                          //             _friendController.resultFriends.clear();
-                          //           },
-                          //           icon: const Icon(
-                          //             Icons.close,
-                          //             color: Colors.black,
-                          //           ),
-                          //         ),
-                          //         dense: true,
-                          //       ) ??
-                          //       const CircularProgressIndicator(),
-                          // );
                         }),
                   )
                 : Container()),

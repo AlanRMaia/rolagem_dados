@@ -3,25 +3,43 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/chat_screen_controller.dart';
+import 'package:rolagem_dados/controllers/room_model_controller.dart';
 import 'package:rolagem_dados/controllers/text_composer_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
+import 'package:rolagem_dados/screens/bottom_bar_pages.dart';
 import 'package:rolagem_dados/screens/chat/chat_message.dart';
+import 'package:rolagem_dados/screens/home.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/widget/my_search_field.dart';
 import 'package:rolagem_dados/widget/search_chat_result_list%20.dart';
-import 'package:rolagem_dados/widget/search_result_list.dart';
 
 import 'text_composer.dart';
 
-class ChatScreen extends GetView<ChatScreenController> {
-  final TextEditingController _textController = TextEditingController();
+class ChatScreen extends StatefulWidget {
+  @override
+  _ChatScreenState createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  // final TextEditingController _textController = TextEditingController();
+
   final TextEditingController _seachController = TextEditingController();
 
   final TextComposerController _composerController =
       Get.put(TextComposerController(Database()));
 
-  RoomModel room = Get.arguments as RoomModel;
+  final ChatScreenController controller =
+      Get.put(ChatScreenController(Database()));
+
+  @override
+  void dispose() {
+    _seachController.dispose();
+
+    super.dispose();
+  }
+
+  final _room = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +51,9 @@ class ChatScreen extends GetView<ChatScreenController> {
       controller.isEmpty = !controller.isEmpty;
     }
 
-    void _loadFriend(String text) {
-      controller.loadFriends(text);
-    }
+    // void _loadFriend(String text) {
+    //   controller.loadFriends(text);
+    // }
 
     return SafeArea(
         bottom: false,
@@ -45,7 +63,7 @@ class ChatScreen extends GetView<ChatScreenController> {
           child: Scaffold(
             appBar: AppBar(
               actions: [
-                Obx(() => room.admUserId == UserController.to.user.id
+                Obx(() => _room.admUserId == UserController.to.user.id
                     ? IconButton(
                         icon: controller.showSearch != true
                             ? const Icon(Icons.group_add)
@@ -76,9 +94,9 @@ class ChatScreen extends GetView<ChatScreenController> {
                     )
                   : ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: NetworkImage(room.imgUrl),
+                        backgroundImage: NetworkImage(_room.imgUrl.toString()),
                       ),
-                      title: Text(room.name),
+                      title: Text(_room.name.toString()),
                     )),
               centerTitle: true,
               elevation: 0,
@@ -127,7 +145,8 @@ class ChatScreen extends GetView<ChatScreenController> {
                                       controller.userFriend.clear(),
                                   voidCallback: () {
                                     controller.addFriendRoom(
-                                        controller.userFriend[index], room.id);
+                                        controller.userFriend[index],
+                                        _room.id.toString());
                                     // _composerController.handleSubmitted(
                                     //     text:
                                     //         '${controller.userFriend[index].name} entrou na sala',
@@ -142,28 +161,28 @@ class ChatScreen extends GetView<ChatScreenController> {
                         )
                       : Container(),
                 ),
-                Positioned(
-                  bottom: 59,
-                  height: 20,
-                  width: Get.mediaQuery.size.width,
-                  child: Obx(() {
-                    return _composerController.isLoading != false
-                        // ignore: avoid_unnecessary_containers
-                        ? Container(
-                            child: Row(
-                              children: [
-                                const SizedBox(width: 10),
-                                const CircularProgressIndicator(),
-                                const Text(
-                                  '  Carregando ...',
-                                  style: TextStyle(color: Colors.white),
-                                )
-                              ],
-                            ),
-                          )
-                        : Container();
-                  }),
-                ),
+                // Positioned(
+                //   bottom: 59,
+                //   height: 20,
+                //   width: Get.mediaQuery.size.width,
+                //   child: Obx(() {
+                //     return _composerController.isLoading != false
+                //         // ignore: avoid_unnecessary_containers
+                //         ? Container(
+                //             child: Row(
+                //               children: [
+                //                 const SizedBox(width: 10),
+                //                 const CircularProgressIndicator(),
+                //                 const Text(
+                //                   '  Carregando ...',
+                //                   style: TextStyle(color: Colors.white),
+                //                 )
+                //               ],
+                //             ),
+                //           )
+                //         : Container();
+                //   }),
+                // ),
                 Positioned(
                   bottom: 0,
                   height: 56,
@@ -175,7 +194,7 @@ class ChatScreen extends GetView<ChatScreenController> {
                             color: Get.isDarkMode
                                 ? Colors.white
                                 : Colors.grey.shade300),
-                        child: TextComposer(room),
+                        child: TextComposer(_room as RoomModel),
                       ),
                     ],
                   ),
