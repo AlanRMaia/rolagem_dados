@@ -116,4 +116,6 @@ class UserModel {
         about.hashCode ^
         isDarkMode.hashCode;
   }
+
+  // factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source));
 }

@@ -14,6 +14,7 @@ class Database extends GetxController {
   final Firestore _firestore = Firestore.instance;
 
   static Database get to => Get.find();
+  final index = 0.obs;
 
   // final _imgUrl = ''.obs;
 
@@ -51,6 +52,7 @@ class Database extends GetxController {
         imgUrlStorage = await imageUser(
             imgFile: imgFile, imgUrl: UserController.to.user.image);
       }
+
       _firestore.collection('users').document(user.id).updateData({
         'name': user.name,
         'email': user.email,
@@ -174,7 +176,6 @@ class Database extends GetxController {
         'imgUrl': await _imageRoom(imgFile),
         'name': name,
         'admUserId': user.id,
-        'admin': UserController.to.user.toMap(),
       });
       final id = doc.documentID;
 
@@ -215,18 +216,58 @@ class Database extends GetxController {
           .collection('rooms')
           .getDocuments();
 
-      final List<Map<String, dynamic>> allRooms = [];
+      final List<RoomModel> allRooms = [];
+      final List<UserModel> usuarios = [];
 
       for (final DocumentSnapshot room in userRooms.documents) {
+        final RoomModel roomModel = RoomModel();
+        roomModel.usuarios = [];
+
         final DocumentSnapshot roomDoc = await _firestore
             .collection('rooms')
             .document(room.data['id'].toString())
             .get();
+        roomModel.admUserId = roomDoc.data['admUserId'].toString();
+        roomModel.id = roomDoc.data['id'].toString();
+        roomModel.imgUrl = roomDoc.data['imgUrl'].toString();
+        roomModel.name = roomDoc.data['name'].toString();
 
-        allRooms.add(roomDoc.data);
+        final adm = await _firestore
+            .collection('users')
+            .document(roomDoc.data['admUserId'].toString())
+            .get();
+
+        roomModel.admin = UserModel.fromDocumentSnapsho(adm);
+
+        final usersRoom = await _firestore
+            .collection('rooms')
+            .document(roomDoc.data['id'].toString())
+            .collection('users')
+            .getDocuments();
+
+        for (var i = 0; i < usersRoom.documents.length; i++) {
+          final docs = usersRoom.documents[i];
+          final userDoc = await _firestore
+              .collection('users')
+              .where('id', isEqualTo: docs.data['id'])
+              .getDocuments();
+
+          final doc = userDoc.documents[0];
+          final UserModel user = UserModel();
+
+          user.id = doc.data['id'].toString();
+          user.name = doc.data['name'].toString();
+          user.image = doc.data['image'].toString();
+          user.email = doc.data['email'].toString();
+          user.phone = doc.data['phone'].toString();
+          user.about = doc.data['about'].toString();
+
+          roomModel.usuarios.add(user);
+        }
+        allRooms.add(roomModel);
       }
 
-      return allRooms.map((map) => RoomModel.fromMap(map)).toList();
+      return allRooms;
     } catch (e) {
       rethrow;
     }
@@ -587,18 +628,19 @@ class Database extends GetxController {
     }
   }
 
+  //Future<List<Map<String, dynamic>>>//
   Future<List<Map<String, dynamic>>> searchUsersEmail(String email) async {
     try {
       if (email != null) {
-        final QuerySnapshot _users =
-            await _firestore.collection('users').getDocuments();
+        final _users = await _firestore
+            .collection('users')
+            .where('email', isEqualTo: email)
+            .getDocuments();
 
         final List<Map<String, dynamic>> allUsers = [];
 
-        for (var user in _users.documents) {
-          if (user.data['email'] == email) {
-            allUsers.add(user.data);
-          }
+        for (final user in _users.documents) {
+          allUsers.add(user.data);
         }
 
         return allUsers;
@@ -655,6 +697,8 @@ class Database extends GetxController {
           .document(roomId)
           .collection('users')
           .add({'id': friend.id});
+      // .collection('users')
+      // .add({'id': friend.id});
     } catch (e) {
       rethrow;
     }

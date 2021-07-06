@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../constants.dart';
 
-class MyTextField extends StatelessWidget {
-  const MyTextField({
+class MyTextFormField extends StatelessWidget {
+  const MyTextFormField({
     Key key,
     this.controller,
     this.hintText,
@@ -39,8 +39,8 @@ class MyTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: TextField(
-        // validator: validator,
+      child: TextFormField(
+        validator: validator,
         maxLines: maxLines,
         onChanged: onChaged,
         controller: controller,

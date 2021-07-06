@@ -13,17 +13,18 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
 
   HomeController(this._database);
 
-  @override
-  void onInit() {
-    loadRooms(UserController.to.user.id);
+  // @override
+  // void onInit() {
+  //   loadRooms(UserController.to.user.id);
 
-    super.onInit();
-  }
+  //   super.onInit();
+  // }
 
   final picker = ImagePicker();
   File _imgFile;
   final RxString _imgUrl = ''.obs;
   final _indexTab = 3.obs;
+  final _isExpanded = false.obs;
 
   File get imgFile => _imgFile;
   set imgFile(File value) => _imgFile = value;
@@ -36,6 +37,9 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
 
   set indexTab(int value) => _indexTab.value = value;
   int get indexTab => _indexTab.value;
+
+  set isExpanded(bool value) => _isExpanded.value = value;
+  bool get isExpanded => _isExpanded.value;
 
   // final _rooms = <Map<String, dynamic>>[].obs;
 
@@ -61,24 +65,27 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
     change([], status: RxStatus.loading());
     try {
       final List<RoomModel> _rooms = [];
-      _firestore
-          .collection('users')
-          .document(userId)
-          .collection('rooms')
-          .snapshots()
-          .listen((snapshot) async {
-        _rooms.clear();
+      // _firestore
+      //     .collection('users')
+      //     .document(userId)
+      //     .collection('rooms')
+      //     .snapshots()
+      //     .listen((snapshot) async {
+      //   _rooms.clear();
 
-        for (final DocumentSnapshot room in snapshot.documents) {
-          final DocumentSnapshot roomDoc = await _firestore
-              .collection('rooms')
-              .document(room?.data['id'].toString())
-              .get();
+      //   for (final DocumentSnapshot room in snapshot.documents) {
+      //     final DocumentSnapshot roomDoc = await _firestore
+      //         .collection('rooms')
+      //         .document(room?.data['id'].toString())
+      //         .get();
 
-          _rooms?.add(RoomModel?.fromMap(roomDoc?.data));
-        }
-        change(_rooms, status: RxStatus.success());
-      });
+      //     _rooms?.add(RoomModel?.fromMap(roomDoc?.data));
+      //   }
+      //   change(_rooms, status: RxStatus.success());
+      // });
+
+      _rooms.addAll(await _database.loadRooms(userId));
+      change(_rooms, status: RxStatus.success());
     } catch (e) {
       change([], status: RxStatus.error());
       rethrow;

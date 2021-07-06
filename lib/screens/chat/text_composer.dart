@@ -10,22 +10,32 @@ import 'package:rolagem_dados/controllers/text_composer_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 
-class TextComposer extends StatelessWidget {
+class TextComposer extends StatefulWidget {
   final RoomModel roomModel;
 
-  TextComposer(this.roomModel);
+  const TextComposer(this.roomModel);
 
+  @override
+  _TextComposerState createState() => _TextComposerState();
+}
+
+class _TextComposerState extends State<TextComposer> {
   final TextEditingController _textController = TextEditingController();
+
   final TextComposerController controller = TextComposerController(Database());
+
+  bool _isComposing = false;
+
+  void _reset() {
+    setState(() {
+      _textController.clear();
+      _isComposing = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final random = Random();
-
-    void _reset() {
-      _textController.clear();
-      controller.isComposing = false;
-    }
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -49,7 +59,9 @@ class TextComposer extends StatelessWidget {
                     await picker.getImage(source: ImageSource.camera);
                 if (imgFile == null) return;
                 controller.handleSubmitted(
-                    file: File(imgFile.path), room: roomModel, type: 'image');
+                    file: File(imgFile.path),
+                    room: widget.roomModel,
+                    type: 'image');
                 _reset();
               },
             ),
@@ -90,7 +102,9 @@ class TextComposer extends StatelessWidget {
                       await picker.getImage(source: ImageSource.gallery);
                   if (imgFile == null) return;
                   controller.handleSubmitted(
-                      file: File(imgFile.path), room: roomModel, type: 'image');
+                      file: File(imgFile.path),
+                      room: widget.roomModel,
+                      type: 'image');
                   _reset();
                 } else {
                   final result = await FilePicker.getFile(
@@ -102,7 +116,7 @@ class TextComposer extends StatelessWidget {
                   final path = result.path;
                   controller.handleSubmitted(
                     file: File(path),
-                    room: roomModel,
+                    room: widget.roomModel,
                     type: 'pdf',
                   );
                   _reset();
@@ -112,39 +126,42 @@ class TextComposer extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: TextField(
-                style: const TextStyle(color: Colors.grey),
-                controller: _textController,
-                decoration: InputDecoration(
-                    hintText: 'Enviar uma mensagem',
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade400,
-                    )),
-                onChanged: (text) {
-                  controller.isComposing = text.isNotEmpty;
-                },
-                onSubmitted: (text) {
-                  if (controller.isComposing) {
-                    controller.handleSubmitted(text: text, room: roomModel);
-                    _reset();
-                  } else {
-                    Get.snackbar(
-                      'Erro ao tentar enviar a mensagem',
-                      'Sua caixa de texto está vazia',
-                      snackPosition: SnackPosition.TOP,
-                    );
-                  }
-                },
-              ),
-            ),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(40),
+                ),
+                child: TextField(
+                  style: const TextStyle(color: Colors.grey),
+                  controller: _textController,
+                  decoration: InputDecoration(
+                      hintText: 'Enviar uma mensagem',
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade400,
+                      )),
+                  onChanged: (text) {
+                    setState(() {
+                      _isComposing = text.isNotEmpty;
+                    });
+                  },
+                  enabled: true,
+                  onSubmitted: (text) {
+                    if (_isComposing) {
+                      controller.handleSubmitted(
+                          text: text, room: widget.roomModel);
+                      _reset();
+                    } else {
+                      Get.snackbar(
+                        'Erro ao tentar enviar a mensagem',
+                        'Sua caixa de texto está vazia',
+                        snackPosition: SnackPosition.TOP,
+                      );
+                    }
+                  },
+                )),
           ),
           Row(
             children: [
@@ -219,7 +236,7 @@ class TextComposer extends StatelessWidget {
                         controller.handleSubmitted(
                             text:
                                 "D4 - Resultado: ${(1 + random.nextInt(5 - 1)).toString()}",
-                            room: roomModel);
+                            room: widget.roomModel);
 
                         break;
                       case 'assets/images/noun_d6_2453695.png':
@@ -228,7 +245,7 @@ class TextComposer extends StatelessWidget {
                         controller.handleSubmitted(
                             text:
                                 "D6 - Resultado: ${(1 + random.nextInt(7 - 1)).toString()}",
-                            room: roomModel);
+                            room: widget.roomModel);
                         break;
                       case 'assets/images/noun_d8_2453699.png':
                         controller.imgDados =
@@ -236,7 +253,7 @@ class TextComposer extends StatelessWidget {
                         controller.handleSubmitted(
                             text:
                                 "D8 - Resultado: ${(1 + random.nextInt(9 - 1)).toString()}",
-                            room: roomModel);
+                            room: widget.roomModel);
                         break;
                       case 'assets/images/noun_d10_2453698.png':
                         controller.imgDados =
@@ -244,7 +261,7 @@ class TextComposer extends StatelessWidget {
                         controller.handleSubmitted(
                             text:
                                 "D10 - Resultado: ${(1 + random.nextInt(11 - 1)).toString()}",
-                            room: roomModel);
+                            room: widget.roomModel);
                         break;
                       case 'assets/images/noun_d12_2453697.png':
                         controller.imgDados =
@@ -252,7 +269,7 @@ class TextComposer extends StatelessWidget {
                         controller.handleSubmitted(
                             text:
                                 "D12 - Resultado: ${(1 + random.nextInt(13 - 1)).toString()}",
-                            room: roomModel);
+                            room: widget.roomModel);
                         break;
                       case 'assets/images/noun_D20_2453700.png':
                         controller.imgDados =
@@ -260,39 +277,49 @@ class TextComposer extends StatelessWidget {
                         controller.handleSubmitted(
                             text:
                                 "D20 - Resultado: ${(1 + random.nextInt(21 - 1)).toString()}",
-                            room: roomModel);
+                            room: widget.roomModel);
                         break;
                       default:
                     }
                   },
                 ),
               ),
-              // Container(
-              //   margin: const EdgeInsets.symmetric(horizontal: 4),
-              //   child: Get.theme.platform == TargetPlatform.iOS
-              //       ? CupertinoButton(
-              //           onPressed: _isComposing
-              //               ? () {
-              //                   controller.handleSubmitted(
-              //                       text: _textController.text,
-              //                       room: widget.roomModel);
-              //                   _reset();
-              //                 }
-              //               : null,
-              //           child: const Icon(Icons.send),
-              //         )
-              //       : IconButton(
-              //           onPressed: _isComposing
-              //               ? () {
-              //                   controller.handleSubmitted(
-              //                       text: _textController.text,
-              //                       room: widget.roomModel);
-              //                   _reset();
-              //                 }
-              //               : null,
-              //           icon: const Icon(Icons.send),
-              //         ),
-              // ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                child: Get.theme.platform == TargetPlatform.iOS
+                    ? CupertinoButton(
+                        onPressed: _isComposing
+                            ? () {
+                                controller.handleSubmitted(
+                                    text: _textController.text,
+                                    room: widget.roomModel);
+                                _reset();
+                              }
+                            : null,
+                        child: const Icon(Icons.send),
+                      )
+                    : IconButton(
+                        disabledColor: Colors.grey,
+                        onPressed: () {
+                          if (_isComposing) {
+                            controller.handleSubmitted(
+                                text: _textController.text,
+                                room: widget.roomModel);
+                            _reset();
+                          } else {
+                            Get.snackbar(
+                              'Erro ao tentar enviar a mensagem',
+                              'Sua caixa de texto está vazia',
+                              snackPosition: SnackPosition.TOP,
+                            );
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.send,
+                          color: Colors.black,
+                        ),
+                      ),
+              ),
             ],
           )
         ],

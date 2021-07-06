@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/screens/bottom_bar_pages.dart';
+import 'package:rolagem_dados/widget/image_inicial_user.dart';
+import 'package:rolagem_dados/widget/signup/image_inicial.dart';
 import 'package:rolagem_dados/widget/signup/image_preview.dart';
 import 'package:rolagem_dados/widget/theme/my_themes.dart';
 import 'package:rolagem_dados/widget/widget.dart';
@@ -10,21 +14,34 @@ import 'package:validatorless/validatorless.dart';
 
 class EditProfile extends GetView<AuthController> {
   final _user = UserController.to.user;
+  final TextEditingController nameController =
+      TextEditingController(text: UserController.to.user.name);
+  final TextEditingController phoneController =
+      TextEditingController(text: UserController.to.user.phone);
+  final TextEditingController sobremimController =
+      TextEditingController(text: UserController.to.user.about);
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController nameController =
-        TextEditingController(text: _user.name);
-    final TextEditingController emailController =
-        TextEditingController(text: _user.email);
-    final TextEditingController phoneController =
-        TextEditingController(text: _user.phone);
-    final TextEditingController sobremimController =
-        TextEditingController(text: _user.about);
+    // final TextEditingController nameController =
+    //     TextEditingController(text: _user.name);
+    // final TextEditingController emailController =
+    //     TextEditingController(text: _user.email);
+    // final TextEditingController phoneController =
+    //     TextEditingController(text: _user.phone);
+    // final TextEditingController sobremimController =
+    //     TextEditingController(text: _user.about);
     // final _formEditKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Get.back();
+              controller.imgFile = null;
+              controller.imgUrl = '';
+            },
+            icon: const Icon(Icons.arrow_back_rounded)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -56,18 +73,15 @@ class EditProfile extends GetView<AuthController> {
                   ),
                   child: Column(
                     children: [
-                      if (controller.imgFile != null)
-                        Obx(() => ImagePreview(
+                      Obx(() => controller.imgUrl == ''
+                          ? ImageInicialUser(
+                              callbackShowImage: controller.showImageGallery,
+                            )
+                          : ImagePreview(
                               isEdit: true,
                               callbackShowImage: controller.showImageGallery,
                               fileUrl: controller.imgUrl,
-                            ))
-                      else
-                        ImagePreview(
-                          isEdit: true,
-                          callbackShowImage: controller.showImageGallery,
-                          imgUrl: _user.image,
-                        ),
+                            )),
                       Flexible(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,8 +91,6 @@ class EditProfile extends GetView<AuthController> {
                             ),
                             MyTextField(
                               label: 'Nome',
-                              validator:
-                                  Validatorless.required('Nome é obrigatório'),
                               borderColorFocus: Get.isDarkMode
                                   ? MyThemes.darkTheme.colorScheme.primary
                                   : MyThemes.lightTheme.colorScheme.primary,
@@ -86,27 +98,21 @@ class EditProfile extends GetView<AuthController> {
                               inputType: TextInputType.name,
                             ),
                             const SizedBox(height: 4),
-                            MyTextField(
-                              label: 'Email',
-                              validator: Validatorless.multiple([
-                                Validatorless.email('Email inválido'),
-                                Validatorless.required('Email obrigatório')
-                              ]),
-                              borderColorFocus: Get.isDarkMode
-                                  ? MyThemes.darkTheme.colorScheme.primary
-                                  : MyThemes.lightTheme.colorScheme.primary,
-                              controller: emailController,
-                              inputType: TextInputType.emailAddress,
-                            ),
-                            const SizedBox(height: 4),
+                            // MyTextField(
+                            //   label: 'Email',
+                            //   validator: Validatorless.multiple([
+                            //     Validatorless.email('Email inválido'),
+                            //     Validatorless.required('Email obrigatório')
+                            //   ]),
+                            //   borderColorFocus: Get.isDarkMode
+                            //       ? MyThemes.darkTheme.colorScheme.primary
+                            //       : MyThemes.lightTheme.colorScheme.primary,
+                            //   controller: emailController,
+                            //   inputType: TextInputType.emailAddress,
+                            // ),
+                            // const SizedBox(height: 4),
                             MyTextField(
                               label: 'Telefone',
-                              validator: Validatorless.multiple([
-                                Validatorless.required(
-                                    'Telefone é obrigatório'),
-                                Validatorless.max(11,
-                                    'Numero máximo permitido é de 11 digitos')
-                              ]),
                               borderColorFocus: Get.isDarkMode
                                   ? MyThemes.darkTheme.colorScheme.primary
                                   : MyThemes.lightTheme.colorScheme.primary,
@@ -131,21 +137,40 @@ class EditProfile extends GetView<AuthController> {
                       Obx(
                         () => MyTextButton(
                             buttonName: 'Salvar',
+                            loadingColor: Colors.white,
                             isLoading: controller.isLoading,
                             onTap: () {
                               // final formValidator =
                               //     _formEditKey.currentState.validate() ?? false;
 
+                              if (nameController.text == '') {
+                                Get.snackbar('Campo nome', 'Campo obrigatório');
+                                return null;
+                              }
+                              if (phoneController.text == '') {
+                                Get.snackbar(
+                                    'Campo telefone', 'Campo obrigatório');
+                                return null;
+                              }
+
+                              if (phoneController.text.length < 11) {
+                                Get.snackbar('Campo telefone',
+                                    'Campo deve conter no mínimo 11 caracteres');
+                                return null;
+                              }
                               controller.editUser(
                                 uid: _user.id,
                                 name: nameController.text.trim(),
-                                email: emailController.text.trim(),
                                 phone: phoneController.text.trim(),
                                 about: sobremimController.text.trim(),
                               );
 
-                              Get.off(() => BottomBarPages());
-                              controller.imgFile = null;
+                              Timer(const Duration(seconds: 3), () {
+                                controller.isLoading = false;
+                                Get.off(() => BottomBarPages());
+                                controller.imgFile = null;
+                              });
+
                               // if (formValidator) {
 
                               // }

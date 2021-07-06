@@ -12,7 +12,7 @@ mixin MyThemes {
     // textTheme: GoogleFonts.poppinsTextTheme(Theme.of(Get.context).textTheme),
     scaffoldBackgroundColor: kBackgroundColor,
     primarySwatch: Colors.blue,
-    visualDensity: VisualDensity.adaptivePlatformDensity,
+    // visualDensity: VisualDensity.adaptivePlatformDensity,
     colorScheme: const ColorScheme.dark(),
     dividerColor: Colors.white,
     primaryColorDark: primaryColor,
@@ -22,7 +22,7 @@ mixin MyThemes {
     // textTheme: GoogleFonts.poppinsTextTheme(Theme.of(BuildContext context).textTheme),
 
     scaffoldBackgroundColor: Colors.white,
-    visualDensity: VisualDensity.adaptivePlatformDensity,
+    // visualDensity: VisualDensity.adaptivePlatformDensity,
     primaryColor: primaryColor,
     colorScheme: const ColorScheme.light(),
     dividerColor: Colors.black,

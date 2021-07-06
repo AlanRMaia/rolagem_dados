@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,6 +27,9 @@ class AuthController extends GetxController {
 
   final _myRoomsFriend = 0.obs;
   final _myFriendsFriend = 0.obs;
+
+  final avatar =
+      'https://firebasestorage.googleapis.com/v0/b/geradordedados-rpg.appspot.com/o/Avatar%2Fuser.png?alt=media&token=248b06cd-e787-45e3-b571-46c1870396a1';
 
   final picker = ImagePicker();
 
@@ -76,6 +80,8 @@ class AuthController extends GetxController {
   Future<void> createUser(String name, String email, String password,
       String phone, String imgUrl) async {
     isLoading = true;
+    // ignore: parameter_assignments
+    imgUrl = avatar;
     try {
       final AuthResult _authResult = await _auth.createUserWithEmailAndPassword(
           email: email.trim(), password: password);
@@ -85,7 +91,10 @@ class AuthController extends GetxController {
       //create a user in firestore
 
       // ignore: parameter_assignments
-      imgUrl = await _database.imageUser(imgFile: _imgFile);
+      if (imgFile != null) {
+        // ignore: parameter_assignments
+        imgUrl = await _database.imageUser(imgFile: _imgFile);
+      }
 
       final UserModel _user = UserModel(
         id: _authResult.user.uid,
@@ -94,8 +103,7 @@ class AuthController extends GetxController {
         name: name,
         email: email,
         phone: phone,
-        image: imgUrl ??
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7yd3gzdOtAsNDbQNhSJz2uQ49puvNchNxvQ&usqp=CAU',
+        image: imgUrl,
       );
 
       if (await _database.createNewUser(_user)) {
@@ -103,6 +111,7 @@ class AuthController extends GetxController {
         Get.find<UserController>().user = _user;
         isLoading = false;
         this.imgUrl = '';
+        imgFile = null;
         Get.offAll(Get.toNamed('/'));
       }
     } catch (e) {
@@ -133,10 +142,11 @@ class AuthController extends GetxController {
     String about,
   }) async {
     try {
+      isLoading = true;
       final UserModel _user = UserModel(
         id: uid,
         name: name,
-        email: email,
+        email: UserController.to.user.email,
         phone: phone,
         image: UserController.to.user.image,
         about: about,

@@ -9,6 +9,7 @@ import 'package:rolagem_dados/widget/Image_avatar_preview.dart';
 import 'package:rolagem_dados/widget/my_password_field.dart';
 import 'package:rolagem_dados/widget/my_text_button.dart';
 import 'package:rolagem_dados/widget/my_text_field.dart';
+import 'package:rolagem_dados/widget/my_text_form_field.dart';
 import 'package:rolagem_dados/widget/signup/image_inicial.dart';
 import 'package:rolagem_dados/widget/signup/image_preview.dart';
 import 'package:validatorless/validatorless.dart';
@@ -89,7 +90,7 @@ class SignUp extends GetWidget<AuthController> {
                               const SizedBox(
                                 height: 20,
                               ),
-                              MyTextField(
+                              MyTextFormField(
                                 label: 'Nome',
                                 validator:
                                     Validatorless.required('Nome obrigatório'),
@@ -99,7 +100,7 @@ class SignUp extends GetWidget<AuthController> {
                                 controller: nameController,
                                 inputType: TextInputType.name,
                               ),
-                              MyTextField(
+                              MyTextFormField(
                                 label: 'Email',
                                 validator: Validatorless.multiple([
                                   Validatorless.required('Email obrigatório'),
@@ -111,7 +112,7 @@ class SignUp extends GetWidget<AuthController> {
                                 controller: emailController,
                                 inputType: TextInputType.emailAddress,
                               ),
-                              MyTextField(
+                              MyTextFormField(
                                 label: 'Telefone',
                                 validator: Validatorless.multiple([
                                   Validatorless.max(
@@ -195,34 +196,31 @@ class SignUp extends GetWidget<AuthController> {
                         ),
                       ),
                       Obx(
-                        () => MyTextButton(
-                          buttonName: 'Cadastrar',
-                          isLoading: controller.isLoading,
-                          onTap: () {
-                            final formValid =
-                                _formKey.currentState?.validate() ?? false;
+                        () => Container(
+                          child: MyTextButton(
+                            loadingColor:
+                                Get.isDarkMode ? Colors.black : Colors.white,
+                            buttonName: 'Cadastrar',
+                            isLoading: controller.isLoading,
+                            onTap: () {
+                              final formValid =
+                                  _formKey.currentState?.validate() ?? false;
 
-                            if (formValid) {
-                              controller.createUser(
-                                nameController.text
-                                    .trim()
-                                    .replaceAll("\\s+", " "),
-                                emailController.text
-                                    .trim()
-                                    .replaceAll("\\s+", " "),
-                                passwordController.text
-                                    .trim()
-                                    .replaceAll("\\s+", " "),
-                                phoneController.text
-                                    .trim()
-                                    .replaceAll("\\s+", " "),
-                                controller.imgUrl,
-                              );
-                            }
-                          },
-                          bgColor: Get.isDarkMode ? Colors.white : Colors.black,
-                          textColor:
-                              Get.isDarkMode ? Colors.black87 : Colors.white,
+                              if (formValid) {
+                                controller.createUser(
+                                  nameController.text.trim(),
+                                  emailController.text.trim(),
+                                  passwordController.text.trim(),
+                                  phoneController.text.trim(),
+                                  controller.imgUrl,
+                                );
+                              }
+                            },
+                            bgColor:
+                                Get.isDarkMode ? Colors.white : Colors.black,
+                            textColor:
+                                Get.isDarkMode ? Colors.black : Colors.white,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 10)

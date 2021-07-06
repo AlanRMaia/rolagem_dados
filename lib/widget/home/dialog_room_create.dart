@@ -82,6 +82,7 @@ class DialogRoomCreate extends StatelessWidget {
                               onTap: () async {
                                 controller.createRoom(textController.text);
                                 controller.resetImage();
+                                controller.imgFile = null;
                                 textController.clear();
                                 Get.back();
                               },
