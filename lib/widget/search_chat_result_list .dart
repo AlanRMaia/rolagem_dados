@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rolagem_dados/controllers/add_friend_controller.dart';
 import 'package:rolagem_dados/models/user.dart';
-
-import 'addfriend/dialog_add_friend.dart';
 
 class SearchChatResultList extends StatelessWidget {
   final Map<String, dynamic> data;

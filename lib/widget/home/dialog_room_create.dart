@@ -30,7 +30,7 @@ class DialogRoomCreate extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Stack(
-        overflow: Overflow.visible,
+        clipBehavior: Clip.none,
         alignment: Alignment.topCenter,
         children: [
           Padding(
@@ -80,11 +80,11 @@ class DialogRoomCreate extends StatelessWidget {
                         child: Obx(() => MyTextButton(
                               isLoading: controllerAuth.isLoading,
                               onTap: () async {
+                                Get.back();
                                 controller.createRoom(textController.text);
                                 controller.resetImage();
                                 controller.imgFile = null;
                                 textController.clear();
-                                Get.back();
                               },
                               buttonName: 'Criar',
                               bgColor: Colors.transparent,
@@ -98,7 +98,7 @@ class DialogRoomCreate extends StatelessWidget {
             ),
           ),
           Positioned(
-              top: -60,
+              top: -30,
               child: Obx(
                 () => GestureDetector(
                     onTap: () async {

@@ -32,6 +32,7 @@ class MyPasswordField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
+        key: key,
         validator: validator,
         style: kBodyText.copyWith(),
         controller: controller,

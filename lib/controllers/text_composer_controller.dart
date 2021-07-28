@@ -48,7 +48,7 @@ class TextComposerController extends GetxController {
   set progress(int value) => _progress.value = value;
   int get progress => _progress.value;
 
-  final Rx<StorageUploadTask> _taskStatus = Rx<StorageUploadTask>();
+  Rx<StorageUploadTask> _taskStatus;
 
   StorageUploadTask get taskStatus => _taskStatus.value;
 

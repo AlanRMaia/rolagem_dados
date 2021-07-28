@@ -4,19 +4,17 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rolagem_dados/constants/firebase.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/user.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 
 class AuthController extends GetxController {
-  final UserController _userController;
-
-  AuthController(this._userController);
-
   static AuthController get to => Get.find();
   final Database _database = Get.put(Database());
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final Rx<FirebaseUser> _firebaseUser = Rx<FirebaseUser>();
+  // final FirebaseAuth auth = FirebaseAuth.instance;
+  final Rx<User> _firebaseUser = Rx<User>(auth.currentUser);
+
   final _isPassWordVisible = false.obs;
   final _isLoading = false.obs;
   final _isDarkMode = true.obs;
@@ -32,6 +30,29 @@ class AuthController extends GetxController {
       'https://firebasestorage.googleapis.com/v0/b/geradordedados-rpg.appspot.com/o/Avatar%2Fuser.png?alt=media&token=248b06cd-e787-45e3-b571-46c1870396a1';
 
   final picker = ImagePicker();
+
+  // @override
+  // void onReady() {
+  //   super.onReady();
+  //   // _firebaseUser = Rx<User>(_auth.currentUser);
+  //   _firebaseUser.bindStream(auth.authStateChanges());
+  //   // ever(_firebaseUser, _setInitialScreen);
+  // }
+
+  // _setInitialScreen(User user) {
+  //   if (user == null) {
+  //     Get.offAll(() => SignUp());
+  //   } else {
+  //     Get.offAll(() => BottomBarPages());
+  //   }
+  // }
+
+  @override
+  void onReady() {
+    super.onReady();
+    // _firebaseUser = Rx<User>(_auth.currentUser);
+    _firebaseUser.bindStream(auth.authStateChanges());
+  }
 
   File get imgFile => _imgFile;
   set imgFile(File value) => _imgFile = value;
@@ -69,13 +90,7 @@ class AuthController extends GetxController {
   int get myFriendsFriend => _myFriendsFriend.value;
   set myFriendsFriend(int value) => _myFriendsFriend.value = value;
 
-  FirebaseUser get user => _firebaseUser.value;
-
-  @override
-  void onInit() {
-    _firebaseUser.bindStream(_auth.onAuthStateChanged);
-    super.onInit();
-  }
+  User get user => _firebaseUser.value;
 
   Future<void> createUser(String name, String email, String password,
       String phone, String imgUrl) async {
@@ -83,7 +98,7 @@ class AuthController extends GetxController {
     // ignore: parameter_assignments
     imgUrl = avatar;
     try {
-      final AuthResult _authResult = await _auth.createUserWithEmailAndPassword(
+      final _authResult = await auth.createUserWithEmailAndPassword(
           email: email.trim(), password: password);
       //Get.offAll(Root());//fecha todas as pilhas de páginas e vai para a selecionada
       //Get.back();//fecha a página atual e volta a anterior
@@ -120,6 +135,8 @@ class AuthController extends GetxController {
         e.message as String,
         snackPosition: SnackPosition.BOTTOM,
       );
+      isLoading = false;
+    } finally {
       isLoading = false;
     }
   }
@@ -170,7 +187,7 @@ class AuthController extends GetxController {
 
     try {
       //find user with uid
-      final AuthResult _authResult = await _auth.signInWithEmailAndPassword(
+      final _authResult = await auth.signInWithEmailAndPassword(
           email: email.trim(), password: password);
       Get.find<UserController>().user =
           await Database().getUser(_authResult.user.uid);
@@ -184,12 +201,14 @@ class AuthController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
       isLoading = false;
+    } finally {
+      isLoading = false;
     }
   }
 
   Future<void> signOut() async {
     try {
-      await _auth.signOut();
+      await auth.signOut();
       Get.find<UserController>().clear();
     } catch (e) {
       Get.snackbar(
@@ -197,6 +216,8 @@ class AuthController extends GetxController {
         e.message as String,
         snackPosition: SnackPosition.BOTTOM,
       );
+      isLoading = false;
+    } finally {
       isLoading = false;
     }
   }
@@ -238,7 +259,12 @@ class AuthController extends GetxController {
   }
 
   Future<void> showImage() async {
-    final pickerfile = await picker.getImage(source: ImageSource.camera);
+    final pickerfile = await picker.getImage(
+      source: ImageSource.camera,
+      imageQuality: 100,
+      maxHeight: 150,
+      maxWidth: 150,
+    );
     _imgFile = File(pickerfile?.path);
     if (pickerfile != null) {
       imgUrl = pickerfile.path;
@@ -246,7 +272,12 @@ class AuthController extends GetxController {
   }
 
   Future<void> showImageGallery() async {
-    final pickerfile = await picker.getImage(source: ImageSource.gallery);
+    final pickerfile = await picker.getImage(
+      source: ImageSource.gallery,
+      imageQuality: 100,
+      maxHeight: 150,
+      maxWidth: 150,
+    );
     _imgFile = File(pickerfile.path);
     if (pickerfile != null) {
       imgUrl = pickerfile.path;

@@ -1,15 +1,13 @@
 import 'dart:ui';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rolagem_dados/controllers/chat_screen_controller.dart';
-import 'package:rolagem_dados/controllers/room_model_controller.dart';
 import 'package:rolagem_dados/controllers/text_composer_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
-import 'package:rolagem_dados/screens/bottom_bar_pages.dart';
 import 'package:rolagem_dados/screens/chat/chat_message.dart';
-import 'package:rolagem_dados/screens/home.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/widget/my_search_field.dart';
 import 'package:rolagem_dados/widget/search_chat_result_list%20.dart';
@@ -32,14 +30,42 @@ class _ChatScreenState extends State<ChatScreen> {
   final ChatScreenController controller =
       Get.put(ChatScreenController(Database()));
 
+  final _room = Get.arguments;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final fbm = FirebaseMessaging();
+    fbm.configure(
+      onMessage: (msg) {
+        print('onMessage...');
+        print(msg);
+        return;
+      },
+      onResume: (msg) {
+        print('onResume...');
+        print(msg);
+        return;
+      },
+      onLaunch: (msg) {
+        print('onLaunch...');
+        print(msg);
+        return;
+      },
+    );
+
+    fbm.subscribeToTopic('sala');
+
+    fbm.requestNotificationPermissions();
+  }
+
   @override
   void dispose() {
     _seachController.dispose();
 
     super.dispose();
   }
-
-  final _room = Get.arguments;
 
   @override
   Widget build(BuildContext context) {

@@ -40,6 +40,7 @@ class MyTextFormField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
+        key: key,
         validator: validator,
         maxLines: maxLines,
         onChanged: onChaged,

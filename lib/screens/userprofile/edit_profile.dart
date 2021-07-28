@@ -90,6 +90,7 @@ class EditProfile extends GetView<AuthController> {
                               height: 20,
                             ),
                             MyTextField(
+                              key: const ValueKey('Nome'),
                               label: 'Nome',
                               borderColorFocus: Get.isDarkMode
                                   ? MyThemes.darkTheme.colorScheme.primary
@@ -112,6 +113,7 @@ class EditProfile extends GetView<AuthController> {
                             // ),
                             // const SizedBox(height: 4),
                             MyTextField(
+                              key: const ValueKey('Telefone'),
                               label: 'Telefone',
                               borderColorFocus: Get.isDarkMode
                                   ? MyThemes.darkTheme.colorScheme.primary
@@ -121,6 +123,7 @@ class EditProfile extends GetView<AuthController> {
                             ),
                             const SizedBox(height: 4),
                             MyTextField(
+                              key: const ValueKey('Sobre mim'),
                               label: 'Sobre mim',
                               borderColorFocus: Get.isDarkMode
                                   ? MyThemes.darkTheme.colorScheme.primary

@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/home_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
-import 'package:rolagem_dados/models/room.dart';
 import 'package:rolagem_dados/models/user.dart';
-import 'package:rolagem_dados/screens/chat/chat_message.dart';
-import 'package:rolagem_dados/screens/chat/chat_screen.dart';
 import 'package:rolagem_dados/screens/presentation.dart';
 import 'package:rolagem_dados/services/data_base.dart';
 import 'package:rolagem_dados/widget/home/dialog_room_create.dart';
@@ -19,6 +15,19 @@ class Home extends GetView<AuthController> {
   // final AuthController controller = Get.put(AuthController(UserController()));
 
   final users = [];
+  bool _isloading = true;
+
+  void _loading() {
+    if (_isloading != false) {
+      _homeController?.loadRooms(UserController.to.user.id);
+    }
+
+    _isloading = false;
+  }
+
+  _reload() async =>
+      await _homeController?.loadRooms(UserController.to.user.id);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +47,7 @@ class Home extends GetView<AuthController> {
                 await Database().getUser(controller.user.uid);
             await controller.numberOfRooms();
             await controller.numberOfFriends();
-            _homeController?.loadRooms(UserController.to.user.id);
+            _loading();
           },
           builder: (_) {
             if (_.user.name != null) {
@@ -83,9 +92,18 @@ class Home extends GetView<AuthController> {
                           // users.addAll(state[index].usuarios);
                           return Container(
                             decoration: BoxDecoration(
-                                color: Colors.white70,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    blurRadius: 1,
+                                    spreadRadius: 1,
+                                    offset: const Offset(
+                                        2, 2), // shadow direction: bottom right
+                                  ),
+                                ],
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(12)),
-                            margin: const EdgeInsets.only(bottom: 5),
+                            margin: const EdgeInsets.all(3),
                             child: Column(
                               children: [
                                 Container(
@@ -112,22 +130,36 @@ class Home extends GetView<AuthController> {
                                     ),
                                     isThreeLine: true,
                                     dense: true,
-                                    title: Text(state[index].name),
-                                    subtitle: Text(state[index].id),
+                                    title: Text(
+                                      state[index].name,
+                                      style:
+                                          const TextStyle(color: Colors.black),
+                                    ),
+                                    subtitle: Text(state[index].admin.email,
+                                        style: const TextStyle(
+                                            color: Colors.black)),
                                     autofocus: true,
                                     onTap: () => Get.toNamed('/chatscreen',
                                         arguments: state[index]),
                                   ),
                                 ),
                                 ListTile(
+                                  dense: true,
                                   title: Text(
-                                      'Administrador: ${state[index].admin.name}'),
+                                      'Administrador: ${state[index].admin.name}',
+                                      style:
+                                          const TextStyle(color: Colors.black)),
                                 ),
                                 if (state[index].usuarios.isNotEmpty)
                                   Padding(
-                                      padding: const EdgeInsets.all(5),
+                                      padding: const EdgeInsets.all(1),
                                       child: ExpansionTile(
-                                        title: const Text('Participantes'),
+                                        collapsedIconColor: Colors.black,
+                                        title: const Text('Participantes',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14,
+                                            )),
                                         children: state[index]
                                             .usuarios
                                             .map((user) => ListTile(
@@ -136,7 +168,9 @@ class Home extends GetView<AuthController> {
                                                         NetworkImage(
                                                             user.image),
                                                   ),
-                                                  title: Text(user.name),
+                                                  title: Text(user.name,
+                                                      style: const TextStyle(
+                                                          color: Colors.black)),
                                                 ))
                                             .toList(),
                                       ))
@@ -161,6 +195,7 @@ class Home extends GetView<AuthController> {
                 controller: _homeController,
                 textController: nameController,
                 controllerAuth: controller,
+                voidCallback: _reload,
               );
             }),
         tooltip: 'Adicionar uma nova sala',

@@ -55,8 +55,9 @@ class _TextComposerState extends State<TextComposer> {
               icon: const Icon(Icons.photo_camera),
               onPressed: () async {
                 final picker = ImagePicker();
-                final imgFile =
-                    await picker.getImage(source: ImageSource.camera);
+                final imgFile = await picker.getImage(
+                  source: ImageSource.camera,
+                );
                 if (imgFile == null) return;
                 controller.handleSubmitted(
                     file: File(imgFile.path),
@@ -107,15 +108,13 @@ class _TextComposerState extends State<TextComposer> {
                       type: 'image');
                   _reset();
                 } else {
-                  final result = await FilePicker.getFile(
-                    type: FileType.CUSTOM,
-                    fileExtension: 'pdf',
-                  );
+                  final result = await FilePicker.platform.pickFiles(
+                      type: FileType.custom, allowedExtensions: ['pdf']);
 
                   if (result == null) return;
-                  final path = result.path;
+                  final path = result.paths;
                   controller.handleSubmitted(
-                    file: File(path),
+                    file: File(path[0]),
                     room: widget.roomModel,
                     type: 'pdf',
                   );

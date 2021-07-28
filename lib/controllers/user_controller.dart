@@ -15,10 +15,10 @@ class UserController extends GetxController {
   }
 
   @override
-  void onInit() {
+  void onReady() {
     // TODO: implement onInit
     Get.changeTheme(MyThemes.darkTheme);
-    super.onInit();
+    super.onReady();
   }
 
   void clear() {

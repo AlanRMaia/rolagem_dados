@@ -51,12 +51,12 @@ class UserModel {
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      id: map['id'].toString(),
-      name: map['name'].toString(),
-      email: map['email'].toString(),
-      image: map['image'].toString(),
-      phone: map['phone'].toString(),
-      about: map['about'].toString(),
+      id: map['id']?.toString(),
+      name: map['name']?.toString(),
+      email: map['email']?.toString(),
+      image: map['image']?.toString(),
+      phone: map['phone']?.toString(),
+      about: map['about']?.toString(),
       isDarkMode: map['isDarkMode'] as bool,
     );
   }

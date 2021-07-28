@@ -91,6 +91,7 @@ class SignUp extends GetWidget<AuthController> {
                                 height: 20,
                               ),
                               MyTextFormField(
+                                key: const ValueKey('Nome'),
                                 label: 'Nome',
                                 validator:
                                     Validatorless.required('Nome obrigatório'),
@@ -101,6 +102,7 @@ class SignUp extends GetWidget<AuthController> {
                                 inputType: TextInputType.name,
                               ),
                               MyTextFormField(
+                                key: const ValueKey('Email'),
                                 label: 'Email',
                                 validator: Validatorless.multiple([
                                   Validatorless.required('Email obrigatório'),
@@ -113,6 +115,7 @@ class SignUp extends GetWidget<AuthController> {
                                 inputType: TextInputType.emailAddress,
                               ),
                               MyTextFormField(
+                                key: const ValueKey('Telefone'),
                                 label: 'Telefone',
                                 validator: Validatorless.multiple([
                                   Validatorless.max(
@@ -129,6 +132,7 @@ class SignUp extends GetWidget<AuthController> {
                               Expanded(
                                 child: Obx(
                                   () => MyPasswordField(
+                                    key: const ValueKey('senha'),
                                     label: 'Password',
                                     validator: Validatorless.multiple([
                                       Validatorless.required(
@@ -149,6 +153,7 @@ class SignUp extends GetWidget<AuthController> {
                               Expanded(
                                 child: Obx(
                                   () => MyPasswordField(
+                                    key: const ValueKey('confirma senha'),
                                     label: 'Confirme Password',
                                     validator: Validatorless.multiple([
                                       Validatorless.required(

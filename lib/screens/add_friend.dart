@@ -4,8 +4,6 @@ import 'package:rolagem_dados/controllers/add_friend_controller.dart';
 import 'package:rolagem_dados/controllers/auth_controller.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/user.dart';
-import 'package:rolagem_dados/screens/userprofile/user_profile.dart';
-import 'package:rolagem_dados/widget/addfriend/dialog_add_friend.dart';
 import 'package:rolagem_dados/widget/my_search_field.dart';
 import 'package:rolagem_dados/widget/search_result_list.dart';
 import 'package:rolagem_dados/widget/userprofile/dialog_delete_friend.dart';
@@ -16,6 +14,7 @@ class AddFriend extends GetView<AuthController> {
   final TextEditingController _textController = TextEditingController();
   final AddFriendController _friendController = Get.put(AddFriendController());
 
+  bool _isLoading = true;
   void _seachFriend() {
     AddFriendController.to.resultsFriends(_textController.text);
     _clear();
@@ -32,9 +31,17 @@ class AddFriend extends GetView<AuthController> {
     AddFriendController.to.loadFriends();
   }
 
+  Future<void> loading() async {
+    if (_isLoading != false) {
+      await AddFriendController.to.loadFriends();
+    }
+
+    _isLoading = false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    AddFriendController.to.loadFriends();
+    loading();
     return GestureDetector(
       onTap: () => Get.focusScope.unfocus(),
       child: Scaffold(

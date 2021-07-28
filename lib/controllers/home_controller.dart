@@ -1,32 +1,33 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
+import 'package:rolagem_dados/constants/firebase.dart';
 import 'package:rolagem_dados/controllers/user_controller.dart';
 import 'package:rolagem_dados/models/room.dart';
+import 'package:rolagem_dados/models/user.dart';
 import 'package:rolagem_dados/services/data_base.dart';
+import 'package:rolagem_dados/utils/showLoading.dart';
 
 class HomeController extends GetxController with StateMixin<List<RoomModel>> {
   final Database _database;
-  final Firestore _firestore = Firestore.instance;
 
   HomeController(this._database);
-
-  // @override
-  // void onInit() {
-  //   loadRooms(UserController.to.user.id);
-
-  //   super.onInit();
-  // }
 
   final picker = ImagePicker();
   File _imgFile;
   final RxString _imgUrl = ''.obs;
   final _indexTab = 3.obs;
   final _isExpanded = false.obs;
+  final _isLoading = false.obs;
 
+  // ignore: unnecessary_getters_setters
   File get imgFile => _imgFile;
+  // ignore: unnecessary_getters_setters
   set imgFile(File value) => _imgFile = value;
 
   String get imgUrl => _imgUrl.value;
@@ -38,17 +39,24 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
   set indexTab(int value) => _indexTab.value = value;
   int get indexTab => _indexTab.value;
 
+  set isLoading(bool value) => _isLoading.value = value;
+  bool get isLoading => _isLoading.value;
+
   set isExpanded(bool value) => _isExpanded.value = value;
   bool get isExpanded => _isExpanded.value;
 
-  // final _rooms = <Map<String, dynamic>>[].obs;
+  // final RxList<RoomModel> _rooms = RxList<RoomModel>([]);
 
-  // List<Map<String, dynamic>> get rooms => _rooms;
+  // List<RoomModel> get rooms => _rooms;
 
-  // set rooms(List<Map<String, dynamic>> value) => _rooms.addAll(value);
+  // set rooms(List<RoomModel> value) => _rooms.addAll(value);
 
   Future<void> showImage() async {
-    final pickerfile = await picker.getImage(source: ImageSource.camera);
+    final pickerfile = await picker.getImage(
+        source: ImageSource.camera,
+        imageQuality: 50,
+        maxHeight: 800,
+        maxWidth: 800);
     _imgFile = File(pickerfile.path);
     if (pickerfile != null) {
       imgUrl = pickerfile.path;
@@ -58,6 +66,10 @@ class HomeController extends GetxController with StateMixin<List<RoomModel>> {
   void resetImage() => _imgUrl.value = '';
 
   Future<void> createRoom(String name) async {
+    if (imgFile == null) {
+      return Get.snackbar(
+          'Sala $name não foi criada', 'adicionar uma imagem é obrigatório');
+    }
     _database.roomCreateSubmitted(name: name, imgFile: imgFile);
   }
 
